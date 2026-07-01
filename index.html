@@ -29,7 +29,7 @@
 
   /* ---- header / masthead ---- */
   .masthead{
-    background:var(--teal-deep);
+    background:#09244a;
     color:#EFEFE8;
     border-radius:4px;
     padding:26px 28px 22px;
@@ -37,33 +37,37 @@
     position:relative;
     overflow:hidden;
   }
-  .masthead:before{
-    content:"";
-    position:absolute; top:0; right:0; bottom:0; width:10px;
-    background:repeating-linear-gradient(45deg,var(--amber) 0 8px,transparent 8px 16px);
-    opacity:.55;
-  }
-  .eyebrow{
-    font-family:'Courier New',monospace;
-    letter-spacing:.12em;
-    font-size:11.5px;
-    text-transform:uppercase;
-    color:#C9D6CE;
-    margin:0 0 8px;
-  }
+.masthead:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 10px;
+    background: repeating-linear-gradient(45deg, #c26000 0 8px, transparent 8px 16px);
+    opacity: 1;
+}
+.eyebrow {
+    font-family: 'montserrat';
+    letter-spacing: .12em;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    color: #ffa73c !important;
+    margin: 0 0 8px;
+}
   h1{
     margin:0 0 6px;
     font-size:30px;
     letter-spacing:-0.01em;
     font-weight:800;
   }
-  .masthead p{
-    margin:4px 0 0;
-    max-width:740px;
-    font-size:14.5px;
-    line-height:1.55;
-    color:#D9E0DB;
-  }
+.masthead p {
+    margin: 4px 0 0;
+    max-width: 740px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #c0c8c2;
+}
 
   /* ---- information contributors ---- */
   .contrib-list{list-style:none; margin:0 0 14px; padding:0; display:flex; flex-direction:column; gap:0;}
@@ -344,10 +348,10 @@
     <summary>Social media accounts</summary>
     <div class="login-body">
       <p class="hint">Confirm or update the official links for the new site's footer. Saved to the shared board - visible to your whole team, not emailed anywhere.</p>
-      <div class="social-row"><label>YouTube</label><input type="url" id="socialYoutube" placeholder="https://www.youtube.com/channel/UC_v9MgCylyh08XPI7M-nRUA"></div>
+      <div class="social-row"><label>YouTube</label><input type="url" id="socialYoutube" placeholder="https://www.youtube.com/channel/yourhandle"></div>
       <div class="social-row"><label>Instagram</label><input type="url" id="socialInstagram" placeholder="https://instagram.com/yourhandle"></div>
-      <div class="social-row"><label>Facebook</label><input type="url" id="socialFacebook" placeholder="https://www.facebook.com/interioremscouncil/"></div>
-      <div class="social-row"><label>LinkedIn</label><input type="url" id="socialLinkedin" placeholder="https://www.linkedin.com/in/interior-region-ems-council-inc-ab58051a0/"></div>
+      <div class="social-row"><label>Facebook</label><input type="url" id="socialFacebook" placeholder="https://www.facebook.com/yourhandle/"></div>
+      <div class="social-row"><label>LinkedIn</label><input type="url" id="socialLinkedin" placeholder="https://www.linkedin.com/in/yourhandle/"></div>
       <div class="social-row"><label>X</label><input type="url" id="socialX" placeholder="https://x.com/yourhandle"></div>
       <span class="social-save-note" id="socialStatus">saved</span>
     </div>
