@@ -66,27 +66,20 @@
   }
 
   /* ---- information contributors ---- */
-  .contributors-section{
-    background:var(--card); border:1px solid var(--line); border-radius:4px;
-    padding:18px 20px; margin-bottom:20px;
-  }
-  .contrib-title{
-    margin:0 0 4px; font-size:14px; font-weight:800; color:var(--teal-deep);
-    text-transform:uppercase; letter-spacing:.05em;
-  }
-  .contrib-hint{margin:0 0 12px; font-size:12.5px; color:var(--slate); line-height:1.5;}
   .contrib-list{list-style:none; margin:0 0 14px; padding:0; display:flex; flex-direction:column; gap:0;}
   .contrib-row{
     display:flex; align-items:center; gap:14px; font-size:13px; padding:7px 0;
     border-bottom:1px dashed var(--line);
   }
   .contrib-row .contrib-name{font-weight:700; min-width:160px;}
+  .contrib-row .contrib-position{color:var(--slate); font-size:12px; min-width:140px;}
   .contrib-row .contrib-email{color:var(--slate); font-family:'Courier New',monospace; font-size:12px; flex:1;}
   .contrib-remove{border:none; background:transparent; color:var(--cut); cursor:pointer; font-size:15px; font-weight:700; line-height:1;}
   .contrib-empty{color:var(--slate); font-size:12.5px; font-style:italic; list-style:none; padding:6px 0;}
   .contrib-add-row{display:flex; gap:8px; flex-wrap:wrap;}
   .contrib-add-row input{padding:8px 10px; border:1px solid var(--line); border-radius:4px; font-size:13px;}
   .contrib-add-row input#contribName{flex:1; min-width:140px;}
+  .contrib-add-row input#contribPosition{flex:1; min-width:140px;}
   .contrib-add-row input#contribEmail{flex:1; min-width:180px;}
 
   /* ---- triage summary strip ---- */
@@ -143,11 +136,16 @@
   .login-section[open] summary:before{content:"\25BE  ";}
   .login-body{padding:0 18px 18px;}
   .login-body p.hint{font-size:12.5px;color:var(--slate); margin:0 0 14px; line-height:1.5;}
-  .login-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px 20px; margin-bottom:14px;}
-  @media (max-width:640px){ .login-grid{grid-template-columns:1fr;} }
-  .login-grid label{display:flex; align-items:flex-start; gap:8px; font-size:13px; line-height:1.4; cursor:pointer;}
-  .login-grid label input{margin-top:3px;}
-  .login-grid label small{display:block; color:var(--slate); font-size:11px;}
+  .login-grid{display:flex; flex-direction:column; gap:0; margin-bottom:14px;}
+  .login-row{padding:10px 0; border-bottom:1px dashed var(--line);}
+  .login-row:last-child{border-bottom:none;}
+  .login-row-top{display:flex; align-items:flex-start; justify-content:space-between; gap:10px;}
+  .login-row-top label{display:flex; align-items:flex-start; gap:8px; font-size:13px; line-height:1.4; cursor:pointer; flex:1; min-width:0;}
+  .login-row-top label input{margin-top:3px;}
+  .login-row-top label small{display:block; color:var(--slate); font-size:11px;}
+  .login-row-top .mini-seg{flex-shrink:0; margin-top:1px;}
+  .login-row-meta{display:flex; gap:16px; margin-top:7px; padding-left:24px; flex-wrap:wrap;}
+  .login-row-meta label{display:flex; align-items:center; gap:5px; font-size:11px; color:var(--slate); cursor:pointer;}
   #loginCustom{
     width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:4px;
     font-size:12.5px; margin-bottom:14px; font-family:inherit; resize:vertical;
@@ -161,6 +159,14 @@
     font-size:13px; min-width:230px;
   }
   .login-note{font-size:11.5px; color:var(--slate);}
+
+  .social-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  .social-row label{width:80px; font-size:12px; font-weight:700; color:var(--teal-deep); flex-shrink:0;}
+  .social-row input{
+    flex:1; padding:8px 10px; border:1px solid var(--line); border-radius:4px; font-size:12.5px;
+  }
+  .social-save-note{font-size:11px; color:var(--keep); opacity:0; transition:opacity .3s; display:inline-block; margin-top:4px;}
+  .social-save-note.show{opacity:1;}
 
   /* ---- page list ---- */
   .group-head{
@@ -232,6 +238,10 @@
   li.item-row a:hover{text-decoration:underline;}
   li.item-row a.is-cut{color:var(--cut); text-decoration:line-through;}
   li.upload-note{list-style:none; font-size:11px; color:var(--keep); padding:2px 2px 8px; border-bottom:1px dashed var(--line);}
+  .remove-upload{
+    border:none; background:none; color:var(--cut); font-size:10.5px; cursor:pointer;
+    text-decoration:underline; padding:0; margin-left:4px;
+  }
 
   .item-controls{display:flex; align-items:center; gap:6px; flex-shrink:0;}
   .mini-seg{display:inline-flex; border:1px solid var(--line); border-radius:3px; overflow:hidden;}
@@ -302,16 +312,46 @@
     <p>Every page on the current site, what's actually on it, and where it could live in the new 6-page structure (Contact - About - Events - Classes - Resources - Grants). Mark each page Cut or Keep, pick a destination, and leave a note. Everyone on the team sees the same board - changes save automatically.</p>
   </div>
 
-  <div class="contributors-section">
-    <p class="contrib-title">Information Contributors</p>
-    <p class="contrib-hint">Anyone who can answer questions about specific pages. Add yourself or a teammate below - everyone reviewing this board can then assign you as the decision maker on any page.</p>
-    <ul class="contrib-list" id="contribList"></ul>
-    <div class="contrib-add-row">
-      <input type="text" id="contribName" placeholder="Name">
-      <input type="email" id="contribEmail" placeholder="Email">
-      <button class="btn" id="contribAddBtn">Add</button>
+  <details class="login-section" id="contributorsSection">
+    <summary>Information Contributors</summary>
+    <div class="login-body">
+      <p class="hint">Anyone who can answer questions about specific pages. Add yourself or a teammate below - everyone reviewing this board can then assign you as the decision maker on any page.</p>
+      <ul class="contrib-list" id="contribList"></ul>
+      <div class="contrib-add-row">
+        <input type="text" id="contribName" placeholder="Name">
+        <input type="text" id="contribPosition" placeholder="Position">
+        <input type="email" id="contribEmail" placeholder="Email">
+        <button class="btn" id="contribAddBtn">Add</button>
+      </div>
     </div>
-  </div>
+  </details>
+
+  <details class="login-section" id="loginSection">
+    <summary>Logins &amp; access needed for integration</summary>
+    <div class="login-body">
+      <p class="hint">Step 1: mark each service Cut or Keep below - that decision is shared with your team, just like the rest of this board. Step 2: check the box next to any service you want included in the checklist that gets emailed to you (that email step is private and never saved here).</p>
+      <div class="login-grid" id="loginGrid"></div>
+      <textarea id="loginCustom" rows="2" placeholder="Add any other services, one per line..."></textarea>
+      <div class="login-send-row">
+        <input type="email" id="loginEmail" placeholder="Send checklist to your email">
+        <button class="btn" id="sendLoginsBtn">Email me this checklist</button>
+        <span class="login-note" id="loginStatus"></span>
+      </div>
+    </div>
+  </details>
+
+  <details class="login-section" id="socialSection">
+    <summary>Social media accounts</summary>
+    <div class="login-body">
+      <p class="hint">Confirm or update the official links for the new site's footer. Saved to the shared board - visible to your whole team, not emailed anywhere.</p>
+      <div class="social-row"><label>YouTube</label><input type="url" id="socialYoutube" placeholder="https://www.youtube.com/channel/UC_v9MgCylyh08XPI7M-nRUA"></div>
+      <div class="social-row"><label>Instagram</label><input type="url" id="socialInstagram" placeholder="https://instagram.com/yourhandle"></div>
+      <div class="social-row"><label>Facebook</label><input type="url" id="socialFacebook" placeholder="https://www.facebook.com/interioremscouncil/"></div>
+      <div class="social-row"><label>LinkedIn</label><input type="url" id="socialLinkedin" placeholder="https://www.linkedin.com/in/interior-region-ems-council-inc-ab58051a0/"></div>
+      <div class="social-row"><label>X</label><input type="url" id="socialX" placeholder="https://x.com/yourhandle"></div>
+      <span class="social-save-note" id="socialStatus">saved</span>
+    </div>
+  </details>
 
   <div class="summary" id="summary"></div>
 
@@ -334,20 +374,6 @@
     </select>
     <button class="btn ghost" id="resetBtn">Reset my view</button>
   </div>
-
-  <details class="login-section" id="loginSection">
-    <summary>Logins &amp; access needed for integration</summary>
-    <div class="login-body">
-      <p class="hint">Check off whatever your web developer will need credentials or admin access to. This list is emailed straight to you when you click send below - it is never saved to the shared board above, and nobody else sees it.</p>
-      <div class="login-grid" id="loginGrid"></div>
-      <textarea id="loginCustom" rows="2" placeholder="Add any other services, one per line..."></textarea>
-      <div class="login-send-row">
-        <input type="email" id="loginEmail" placeholder="Send checklist to your email">
-        <button class="btn" id="sendLoginsBtn">Email me this checklist</button>
-        <span class="login-note" id="loginStatus"></span>
-      </div>
-    </div>
-  </details>
 
   <div id="listings"><div class="loading">Loading review board...</div></div>
 
@@ -531,12 +557,29 @@ const LOGIN_SERVICES = [
 
 function renderLoginGrid(){
   const grid = document.getElementById("loginGrid");
-  grid.innerHTML = LOGIN_SERVICES.map((s,i)=>`
-    <label>
-      <input type="checkbox" id="svc-${i}" value="${escapeHtml(s[0])}|${escapeHtml(s[1])}">
-      <span>${escapeHtml(s[0])}<small>${escapeHtml(s[2])}</small></span>
-    </label>
-  `).join("");
+  const rec = getRec("_login_checklist");
+  grid.innerHTML = LOGIN_SERVICES.map((s,i)=>{
+    const key = "login-"+i;
+    const st = (rec.items && rec.items[key]) || "undecided";
+    const meta = (rec.meta && rec.meta[key]) || {};
+    return `
+    <div class="login-row">
+      <div class="login-row-top">
+        <label>
+          <input type="checkbox" class="svc-check" data-idx="${i}" id="svc-${i}">
+          <span>${escapeHtml(s[0])}<small>${escapeHtml(s[2])}</small></span>
+        </label>
+        <span class="mini-seg" data-page="_login_checklist" data-key="${key}">
+          <button data-status="cut" class="${st==='cut'?'on cut':''}" title="Cut">C</button>
+          <button data-status="keep" class="${st==='keep'?'on keep':''}" title="Keep">K</button>
+        </span>
+      </div>
+      <div class="login-row-meta">
+        <label><input type="checkbox" class="login-meta-checkbox" data-page="_login_checklist" data-key="${key}" data-field="invited" ${meta.invited?'checked':''}> Invited as user</label>
+        <label><input type="checkbox" class="login-meta-checkbox" data-page="_login_checklist" data-key="${key}" data-field="twofa" ${meta.twofa?'checked':''}> 2FA required</label>
+      </div>
+    </div>`;
+  }).join("");
 }
 
 function setLoginStatus(msg, ok){
@@ -553,21 +596,33 @@ function wireLoginChecklist(){
       setLoginStatus("Enter a valid email first.", false);
       return;
     }
-    const checked = Array.from(document.querySelectorAll('#loginGrid input[type=checkbox]:checked'))
-      .map(cb=>{
-        const [name,url] = cb.value.split("|");
-        return url ? "- " + name + " (" + url + ")" : "- " + name;
-      });
+    const checkedBoxes = Array.from(document.querySelectorAll('#loginGrid input.svc-check:checked'));
+    const serviceBlocks = checkedBoxes.map(cb=>{
+      const idx = parseInt(cb.dataset.idx, 10);
+      const [name, url] = LOGIN_SERVICES[idx];
+      const key = "login-"+idx;
+      const invitedCb = document.querySelector('.login-meta-checkbox[data-key="'+key+'"][data-field="invited"]');
+      const twofaCb = document.querySelector('.login-meta-checkbox[data-key="'+key+'"][data-field="twofa"]');
+      const invited = invitedCb ? invitedCb.checked : false;
+      const twofa = twofaCb ? twofaCb.checked : false;
+      let block = name + (url ? " (" + url + ")" : "");
+      block += "\n  Login:";
+      block += "\n  Password:";
+      block += "\n  [" + (invited ? "x" : " ") + "] Invited as user";
+      block += "\n  [" + (twofa ? "x" : " ") + "] 2FA required";
+      return block;
+    });
     const customLines = document.getElementById("loginCustom").value
-      .split("\n").map(s=>s.trim()).filter(Boolean).map(s=>"- " + s);
-    const all = checked.concat(customLines);
+      .split("\n").map(s=>s.trim()).filter(Boolean)
+      .map(s=> s + "\n  Login:\n  Password:");
+    const all = serviceBlocks.concat(customLines);
     if(all.length===0){
       setLoginStatus("Check at least one service, or add your own, first.", false);
       return;
     }
     const subject = "Logins needed - IREMSC site rebuild integration";
     const body = "Services that need login or access handed to the web developer:\n\n"
-      + all.join("\n")
+      + all.join("\n\n")
       + "\n\n(Sent from the IREMSC content triage tool)";
     window.location.href = "mailto:" + email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
     setLoginStatus("Opening your email client...", true);
@@ -593,6 +648,7 @@ function renderContributors(){
     ? contributors.map((c,i)=>`
         <li class="contrib-row">
           <span class="contrib-name">${escapeHtml(c.name)}</span>
+          <span class="contrib-position">${escapeHtml(c.position||'')}</span>
           <span class="contrib-email">${escapeHtml(c.email)}</span>
           <button class="contrib-remove" data-idx="${i}" title="Remove">&times;</button>
         </li>`).join("")
@@ -618,8 +674,10 @@ function renderContributors(){
 function wireContributorForm(){
   document.getElementById("contribAddBtn").addEventListener("click", async ()=>{
     const nameEl = document.getElementById("contribName");
+    const positionEl = document.getElementById("contribPosition");
     const emailEl = document.getElementById("contribEmail");
     const name = nameEl.value.trim();
+    const position = positionEl.value.trim();
     const email = emailEl.value.trim();
     if(!name || !email || !email.includes("@")){
       alert("Enter a name and a valid email.");
@@ -629,11 +687,12 @@ function wireContributorForm(){
       const res = await fetch("/api/contributors", {
         method: "POST",
         headers: {"Content-Type":"application/json"},
-        body: JSON.stringify({ name, email })
+        body: JSON.stringify({ name, position, email })
       });
       if(res.ok) contributors = await res.json();
     }catch(e){ console.error(e); }
     nameEl.value = "";
+    positionEl.value = "";
     emailEl.value = "";
     renderContributors();
     render();
@@ -643,7 +702,8 @@ function wireContributorForm(){
 function decisionMakerOptionsHtml(rec){
   return contributors.map((c,i)=>{
     const selected = rec.decisionMaker && rec.decisionMaker.email === c.email ? "selected" : "";
-    return `<option value="${i}" ${selected}>${escapeHtml(c.name)} (${escapeHtml(c.email)})</option>`;
+    const label = c.position ? `${c.name} - ${c.position} (${c.email})` : `${c.name} (${c.email})`;
+    return `<option value="${i}" ${selected}>${escapeHtml(label)}</option>`;
   }).join("");
 }
 
@@ -673,9 +733,10 @@ function buildParentOptions(select){
 }
 
 function getRec(id){
-  if(!state[id]) state[id] = {status:"undecided", parent:"", notes:"", decisionMaker:null, items:{}, uploads:{}};
+  if(!state[id]) state[id] = {status:"undecided", parent:"", notes:"", decisionMaker:null, items:{}, uploads:{}, meta:{}};
   if(!state[id].items) state[id].items = {};
   if(!state[id].uploads) state[id].uploads = {};
+  if(!state[id].meta) state[id].meta = {};
   if(state[id].decisionMaker === undefined) state[id].decisionMaker = null;
   return state[id];
 }
@@ -706,7 +767,8 @@ async function saveOne(id){
           notes: rec.notes,
           decisionMaker: rec.decisionMaker,
           items: rec.items,
-          uploads: rec.uploads
+          uploads: rec.uploads,
+          meta: rec.meta
         })
       });
       if(!res.ok) throw new Error("save failed: "+res.status);
@@ -797,7 +859,7 @@ function renderItemList(pageId, label, items, kind, rec, detailsKey){
       + replaceControl
       + '</span></li>';
     if(upload){
-      row += '<li class="upload-note">Replacement uploaded: <a href="'+upload.url+'" target="_blank" rel="noopener">'+escapeHtml(upload.name)+'</a></li>';
+      row += '<li class="upload-note">Replacement uploaded: <a href="'+upload.url+'" target="_blank" rel="noopener">'+escapeHtml(upload.name)+'</a> <button class="remove-upload" data-page="'+pageId+'" data-key="'+key+'" title="Remove this replacement">&times; remove</button></li>';
     }
     return row;
   }).join("");
@@ -950,6 +1012,7 @@ function cardHtml(p){
 
 function render(){
   renderSummary();
+  renderLoginGrid();
   const groups = {};
   PARENTS.forEach(p=>groups[p]=[]);
   const visible = PAGES.filter(matchesFilters);
@@ -963,6 +1026,7 @@ function render(){
   const el = document.getElementById("listings");
   if(visible.length===0){
     el.innerHTML = `<div class="empty">No pages match the current filters.</div>`;
+    attachCardEvents(); // still wire up the login grid's buttons
     return;
   }
   let html = "";
@@ -989,7 +1053,7 @@ function attachCardEvents(){
     btn.addEventListener("click", async ()=>{
       const id = btn.parentElement.dataset.id;
       const rec = getRec(id);
-      rec.status = btn.dataset.status;
+      rec.status = (rec.status === btn.dataset.status) ? "undecided" : btn.dataset.status;
       await saveOne(id);
       render();
       flashSaved(id);
@@ -1037,7 +1101,18 @@ function attachCardEvents(){
       const seg = btn.closest(".mini-seg");
       const pageId = seg.dataset.page, key = seg.dataset.key;
       const rec = getRec(pageId);
-      rec.items[key] = btn.dataset.status;
+      rec.items[key] = (rec.items[key] === btn.dataset.status) ? "undecided" : btn.dataset.status;
+      await saveOne(pageId);
+      render();
+      flashSaved(pageId);
+    });
+  });
+
+  document.querySelectorAll(".remove-upload").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const pageId = btn.dataset.page, key = btn.dataset.key;
+      const rec = getRec(pageId);
+      if(rec.uploads) delete rec.uploads[key];
       await saveOne(pageId);
       render();
       flashSaved(pageId);
@@ -1081,6 +1156,16 @@ function attachCardEvents(){
         console.error(e);
         alert("Upload failed - please try again.");
       }
+    });
+  });
+
+  document.querySelectorAll(".login-meta-checkbox").forEach(cb=>{
+    cb.addEventListener("change", async ()=>{
+      const pageId = cb.dataset.page, key = cb.dataset.key, field = cb.dataset.field;
+      const rec = getRec(pageId);
+      if(!rec.meta[key]) rec.meta[key] = {};
+      rec.meta[key][field] = cb.checked;
+      await saveOne(pageId);
     });
   });
 }
@@ -1130,8 +1215,62 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
   render();
 });
 
+// ---------- social media accounts ----------
+const SOCIAL_FIELDS = ["youtube","instagram","facebook","linkedin","x"];
+let socialSaveTimer = null;
+
+async function loadSocial(){
+  try{
+    const res = await fetch("/api/social");
+    if(res.ok){
+      const data = await res.json();
+      SOCIAL_FIELDS.forEach(f=>{
+        const el = document.getElementById("social"+f[0].toUpperCase()+f.slice(1));
+        if(el && data[f]) el.value = data[f];
+      });
+    }
+  }catch(e){
+    console.error("Could not load social links", e);
+  }
+}
+
+function wireSocialForm(){
+  SOCIAL_FIELDS.forEach(f=>{
+    const el = document.getElementById("social"+f[0].toUpperCase()+f.slice(1));
+    if(!el) return;
+    el.addEventListener("input", ()=>{
+      clearTimeout(socialSaveTimer);
+      socialSaveTimer = setTimeout(saveSocial, 600);
+    });
+  });
+}
+
+async function saveSocial(){
+  const payload = {};
+  SOCIAL_FIELDS.forEach(f=>{
+    const el = document.getElementById("social"+f[0].toUpperCase()+f.slice(1));
+    payload[f] = el ? el.value.trim() : "";
+  });
+  try{
+    const res = await fetch("/api/social", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+    if(res.ok){
+      const tick = document.getElementById("socialStatus");
+      if(tick){
+        tick.classList.add("show");
+        setTimeout(()=>tick.classList.remove("show"), 1200);
+      }
+    }
+  }catch(e){ console.error("Could not save social links", e); }
+}
+
 wireLoginChecklist();
 wireContributorForm();
+wireSocialForm();
+loadSocial();
 loadContributors().then(loadAll);
 </script>
 </body>
