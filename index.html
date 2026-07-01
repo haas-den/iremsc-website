@@ -4,19 +4,19 @@
 <meta charset="UTF-8">
 <title>IREMSC Website Rebuild - Content Triage</title>
 <style>
-  :root{
-    --paper:#EEF2F0;
-    --ink:#16241F;
-    --teal:#1F4B43;
-    --teal-deep:#11302A;
-    --amber:#D98A2B;
-    --slate:#5C6B68;
-    --line:#C9D2CC;
-    --card:#FFFFFF;
-    --keep:#1F6B43;
-    --cut:#D98A2B;
-    --undecided:#9AA6A1;
-  }
+ :root {
+    --paper: #EEF2F0;
+    --ink: #051c3e;
+    --teal: #1b4279;
+    --teal-deep: #11315f;
+    --amber: #ee6e00;
+    --slate: #869599;
+    --line: #ececec;
+    --card: #ffffff;
+    --keep: #50863f;
+    --cut: #ee6e00;
+    --undecided: #aebab9;
+}
   *{box-sizing:border-box;}
   body{
     margin:0;
@@ -186,6 +186,7 @@
   .card{
     background:var(--card); border:1px solid var(--line); border-radius:4px;
     margin-bottom:12px; display:flex; overflow:hidden;
+    box-shadow: -1px 2px 2px -5px #404040;
   }
   .card .tab{width:7px; flex-shrink:0;}
   .tab.status-keep{background:var(--keep);}
