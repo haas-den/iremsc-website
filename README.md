@@ -10,7 +10,8 @@ link sees the same shared board.
 ```
 index.html                       the tool itself
 functions/api/decisions.js       GET/POST - reads & writes page decisions (KV)
-functions/api/contributors.js    GET/POST/DELETE - the shared name/email list (KV)
+functions/api/contributors.js    GET/POST/DELETE - the shared name/position/email list (KV)
+functions/api/social.js          GET/POST - the shared social media URLs (KV)
 functions/api/upload.js          POST - accepts a file upload (R2)
 functions/api/file/[[path]].js   GET - serves an uploaded file back out (R2)
 README.md                        this file
@@ -98,16 +99,24 @@ addresses/domain). Takes about 5 minutes and requires no code changes here.
   e.g. `uploads["file-3"] = {name, url, uploadedAt}`.
 - **Standalone uploads** (brand-new files not tied to anything that existed
   on the old site) -> same R2 bucket, appended to `uploads.standalone`.
-- **Information Contributors** (the name/email list at the top of the page)
-  -> one KV key, `contributors:list`, holding a JSON array. This is what
-  populates the "Decision maker" dropdown on every page card. Adding a
+- **Information Contributors** (the name/position/email list near the top of
+  the page) -> one KV key, `contributors:list`, holding a JSON array. This is
+  what populates the "Decision maker" dropdown on every page card. Adding a
   contributor is visible to the whole team within ~15 seconds (same polling
   loop as decisions).
-- **The "Logins & access needed" checklist** is intentionally separate from
-  all of the above - it never touches KV, R2, or any API. Checking boxes and
-  clicking "Email me this checklist" just opens a `mailto:` link in your own
-  email client, addressed to whatever email you typed in. Nothing about it is
-  visible to your team or stored anywhere on the server.
+- **Social media accounts** (YouTube/Instagram/Facebook/LinkedIn/X) -> one KV
+  key, `social:links`, holding a single JSON object. Shared and visible to
+  the whole team, since these are just public URLs, not credentials.
+- **Logins & access checklist Keep/Cut** - each service in that list also has
+  its own Cut/Keep toggle now. That part *is* saved to the shared board (it's
+  just an editorial decision, not sensitive), reusing the same `/api/decisions`
+  endpoint under a synthetic page id (`_login_checklist`) so no separate
+  backend code was needed for it.
+- **The "Email me this checklist" button itself** is intentionally separate
+  from all of the above - it never touches KV, R2, or any API. Checking boxes
+  and clicking send just opens a `mailto:` link in your own email client,
+  addressed to whatever email you typed in. Nothing about *that specific
+  action* is visible to your team or stored anywhere on the server.
 
 ## A note on file size
 
