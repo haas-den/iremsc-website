@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IREMSC Website Rebuild - Content Triage</title>
+<style>
+  :root{
+    --paper:#EEF2F0;
+    --ink:#16241F;
+    --teal:#1F4B43;
+    --teal-deep:#11302A;
+    --amber:#D98A2B;
+    --slate:#5C6B68;
+    --line:#C9D2CC;
+    --card:#FFFFFF;
+    --keep:#1F6B43;
+    --cut:#D98A2B;
+    --undecided:#9AA6A1;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Helvetica Neue',Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 24px 80px;}
+
+  /* ---- header / masthead ---- */
+  .masthead{
+    background:var(--teal-deep);
+    color:#EFEFE8;
+    border-radius:4px;
+    padding:26px 28px 22px;
+    margin-bottom:18px;
+    position:relative;
+    overflow:hidden;
+  }
+  .masthead:before{
+    content:"";
+    position:absolute; top:0; right:0; bottom:0; width:10px;
+    background:repeating-linear-gradient(45deg,var(--amber) 0 8px,transparent 8px 16px);
+    opacity:.55;
+  }
+  .eyebrow{
+    font-family:'Courier New',monospace;
+    letter-spacing:.12em;
+    font-size:11.5px;
+    text-transform:uppercase;
+    color:#C9D6CE;
+    margin:0 0 8px;
+  }
+  h1{
+    margin:0 0 6px;
+    font-size:30px;
+    letter-spacing:-0.01em;
+    font-weight:800;
+  }
+  .masthead p{
+    margin:4px 0 0;
+    max-width:740px;
+    font-size:14.5px;
+    line-height:1.55;
+    color:#D9E0DB;
+  }
+
+  /* ---- information contributors ---- */
+  .contributors-section{
+    background:var(--card); border:1px solid var(--line); border-radius:4px;
+    padding:18px 20px; margin-bottom:20px;
+  }
+  .contrib-title{
+    margin:0 0 4px; font-size:14px; font-weight:800; color:var(--teal-deep);
+    text-transform:uppercase; letter-spacing:.05em;
+  }
+  .contrib-hint{margin:0 0 12px; font-size:12.5px; color:var(--slate); line-height:1.5;}
+  .contrib-list{list-style:none; margin:0 0 14px; padding:0; display:flex; flex-direction:column; gap:0;}
+  .contrib-row{
+    display:flex; align-items:center; gap:14px; font-size:13px; padding:7px 0;
+    border-bottom:1px dashed var(--line);
+  }
+  .contrib-row .contrib-name{font-weight:700; min-width:160px;}
+  .contrib-row .contrib-email{color:var(--slate); font-family:'Courier New',monospace; font-size:12px; flex:1;}
+  .contrib-remove{border:none; background:transparent; color:var(--cut); cursor:pointer; font-size:15px; font-weight:700; line-height:1;}
+  .contrib-empty{color:var(--slate); font-size:12.5px; font-style:italic; list-style:none; padding:6px 0;}
+  .contrib-add-row{display:flex; gap:8px; flex-wrap:wrap;}
+  .contrib-add-row input{padding:8px 10px; border:1px solid var(--line); border-radius:4px; font-size:13px;}
+  .contrib-add-row input#contribName{flex:1; min-width:140px;}
+  .contrib-add-row input#contribEmail{flex:1; min-width:180px;}
+
+  /* ---- triage summary strip ---- */
+  .summary{
+    display:flex; gap:0; background:var(--card); border:1px solid var(--line);
+    border-radius:4px; overflow:hidden; margin-bottom:20px;
+  }
+  .summary .cell{
+    flex:1; padding:14px 16px; border-right:1px solid var(--line);
+    cursor:pointer; transition:background .15s;
+  }
+  .summary .cell:last-child{border-right:none;}
+  .summary .cell:hover{background:#F3F6F4;}
+  .summary .cell.active{background:var(--teal); color:#fff;}
+  .summary .n{font-family:'Courier New',monospace; font-size:22px; font-weight:700; display:block;}
+  .summary .lbl{font-size:11px; text-transform:uppercase; letter-spacing:.07em; color:var(--slate);}
+  .summary .cell.active .lbl{color:#D9E0DB;}
+
+  /* ---- controls ---- */
+  .controls{
+    display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    margin-bottom:18px;
+  }
+  .controls input[type=text]{
+    flex:1; min-width:220px; padding:10px 12px; border:1px solid var(--line);
+    border-radius:4px; font-size:14px; background:var(--card);
+  }
+  select.parentfilter, select.statusfilter{
+    padding:10px 12px; border:1px solid var(--line); border-radius:4px;
+    font-size:13px; background:var(--card); color:var(--ink);
+  }
+  .btn{
+    padding:10px 14px; border-radius:4px; border:1px solid var(--teal);
+    background:var(--teal); color:#fff; font-size:13px; cursor:pointer; font-weight:600;
+  }
+  .btn.ghost{background:transparent; color:var(--teal);}
+  .btn:hover{opacity:.88;}
+
+  /* ---- legend ---- */
+  .legend{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:6px; font-size:11.5px; color:var(--slate);}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .dot{width:9px; height:9px; border-radius:50%; display:inline-block;}
+
+  /* ---- login / access checklist (dropdown, emailed only) ---- */
+  .login-section{
+    background:var(--card); border:1px solid var(--line); border-radius:4px; margin-bottom:20px;
+  }
+  .login-section summary{
+    cursor:pointer; padding:14px 18px; font-weight:700; font-size:14px;
+    color:var(--teal-deep); list-style:none;
+  }
+  .login-section summary::-webkit-details-marker{display:none;}
+  .login-section summary:before{content:"\25B8  "; color:var(--amber);}
+  .login-section[open] summary:before{content:"\25BE  ";}
+  .login-body{padding:0 18px 18px;}
+  .login-body p.hint{font-size:12.5px;color:var(--slate); margin:0 0 14px; line-height:1.5;}
+  .login-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px 20px; margin-bottom:14px;}
+  @media (max-width:640px){ .login-grid{grid-template-columns:1fr;} }
+  .login-grid label{display:flex; align-items:flex-start; gap:8px; font-size:13px; line-height:1.4; cursor:pointer;}
+  .login-grid label input{margin-top:3px;}
+  .login-grid label small{display:block; color:var(--slate); font-size:11px;}
+  #loginCustom{
+    width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:4px;
+    font-size:12.5px; margin-bottom:14px; font-family:inherit; resize:vertical;
+  }
+  .login-send-row{
+    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    padding-top:12px; border-top:1px dashed var(--line);
+  }
+  .login-send-row input[type=email]{
+    padding:9px 11px; border:1px solid var(--line); border-radius:4px;
+    font-size:13px; min-width:230px;
+  }
+  .login-note{font-size:11.5px; color:var(--slate);}
+
+  /* ---- page list ---- */
+  .group-head{
+    margin:30px 0 10px; display:flex; align-items:baseline; gap:10px;
+  }
+  .group-head h2{
+    font-size:13px; text-transform:uppercase; letter-spacing:.09em;
+    margin:0; color:var(--teal-deep); font-weight:800;
+  }
+  .group-head .count{font-family:'Courier New',monospace; font-size:12px; color:var(--slate);}
+  .group-head hr{flex:1; border:none; border-top:1px solid var(--line); margin:0;}
+
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:4px;
+    margin-bottom:12px; display:flex; overflow:hidden;
+  }
+  .card .tab{width:7px; flex-shrink:0;}
+  .tab.status-keep{background:var(--keep);}
+  .tab.status-cut{background:var(--cut);}
+  .tab.status-undecided{background:var(--undecided);}
+
+  .card-details{flex:1;}
+  .card-summary{list-style:none; cursor:pointer; padding:16px 18px; display:block;}
+  .card-summary::-webkit-details-marker{display:none;}
+
+  .summary-title-row{display:flex; align-items:center; justify-content:space-between; gap:12px;}
+  .title-left{display:flex; align-items:center; gap:8px; min-width:0;}
+  .arrow{display:inline-block; color:var(--amber); transition:transform .15s; flex-shrink:0; font-size:12px;}
+  .card-details[open] .arrow{transform:rotate(90deg);}
+  .card-title{font-size:16.5px; font-weight:700; overflow:hidden; text-overflow:ellipsis;}
+
+  .status-badge{
+    font-size:10.5px; font-weight:700; padding:3px 10px; border-radius:12px;
+    text-transform:uppercase; letter-spacing:.05em; white-space:nowrap; flex-shrink:0;
+  }
+  .status-badge.keep{background:var(--keep); color:#fff;}
+  .status-badge.cut{background:var(--cut); color:#fff;}
+  .status-badge.undecided{background:var(--undecided); color:#fff;}
+
+  .card-url{margin-top:7px; font-family:'Courier New',monospace; font-size:11.5px; color:var(--slate); word-break:break-all;}
+  .card-url a{color:var(--slate); text-decoration:none; border-bottom:1px dotted var(--line);}
+
+  .decision-maker-row{margin-top:10px; display:flex; align-items:center; gap:9px; flex-wrap:wrap;}
+  .decision-maker-row label{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--slate);}
+  select.decisionmaker{
+    padding:6px 9px; border:1px solid var(--line); border-radius:4px; font-size:12.5px;
+    background:#fff; max-width:300px;
+  }
+
+  .card-rest{padding:0 18px 16px;}
+  .card-desc{font-size:13.5px; line-height:1.55; color:#33433D; margin:12px 0 12px; max-width:760px;}
+
+  .meta-row{display:flex; gap:18px; flex-wrap:wrap; font-size:12px; color:var(--slate); margin-bottom:10px;}
+
+  details.linklist{font-size:12.5px; margin-bottom:6px;}
+  details.linklist summary{cursor:pointer; color:var(--teal-deep); font-weight:600; outline:none;}
+  details.linklist ul{
+    margin:8px 0 0 0; padding-left:0; list-style:none;
+    max-height:300px; overflow-y:auto; border-top:1px solid var(--line);
+  }
+  li.item-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:6px 2px; border-bottom:1px dashed var(--line);
+  }
+  li.item-row a{
+    flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    color:#2B5A50; text-decoration:none; font-size:12px;
+  }
+  li.item-row a:hover{text-decoration:underline;}
+  li.item-row a.is-cut{color:var(--cut); text-decoration:line-through;}
+  li.upload-note{list-style:none; font-size:11px; color:var(--keep); padding:2px 2px 8px; border-bottom:1px dashed var(--line);}
+
+  .item-controls{display:flex; align-items:center; gap:6px; flex-shrink:0;}
+  .mini-seg{display:inline-flex; border:1px solid var(--line); border-radius:3px; overflow:hidden;}
+  .mini-seg button{
+    border:none; background:#fff; width:22px; height:21px; font-size:10px; font-weight:700;
+    cursor:pointer; color:var(--slate); border-right:1px solid var(--line);
+  }
+  .mini-seg button:last-child{border-right:none;}
+  .mini-seg button.on.keep{background:var(--keep); color:#fff;}
+  .mini-seg button.on.cut{background:var(--cut); color:#fff;}
+
+  .upload-btn{
+    font-size:10.5px; color:var(--teal-deep); border:1px solid var(--line); border-radius:3px;
+    padding:3px 7px; cursor:pointer; background:#F7F9F8; white-space:nowrap;
+  }
+  .upload-btn:hover{background:#EDF2EF;}
+
+  .add-upload-row{display:flex; gap:8px; margin-top:8px; padding-top:8px; flex-wrap:wrap;}
+  .add-upload-row input.upload-label{
+    flex:1; min-width:140px; padding:6px 8px; border:1px solid var(--line);
+    border-radius:3px; font-size:12px;
+  }
+
+  /* ---- decision row ---- */
+  .decision-row{margin-top:12px; padding-top:12px; border-top:1px dashed var(--line);}
+  .decision-row-top{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;}
+  .seg{display:flex; border:1px solid var(--line); border-radius:4px; overflow:hidden;}
+  .seg button{
+    border:none; background:#fff; padding:7px 12px; font-size:12px; cursor:pointer;
+    border-right:1px solid var(--line); color:var(--slate); font-weight:600;
+  }
+  .seg button:last-child{border-right:none;}
+  .seg button.on.keep{background:var(--keep); color:#fff;}
+  .seg button.on.cut{background:var(--cut); color:#fff;}
+
+  .dest-block{display:flex; flex-direction:column; align-items:flex-end; gap:4px; max-width:230px;}
+  select.parentpick{
+    padding:7px 10px; border:1px solid var(--line); border-radius:4px; font-size:12.5px; background:#fff;
+    width:100%;
+  }
+  .dest-caption{font-size:9px; color:var(--slate); text-align:right; line-height:1.3;}
+
+  .notes-block{margin-top:14px; width:100%;}
+  .notes-label{
+    display:block; font-size:11px; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--slate); margin-bottom:5px;
+  }
+  textarea.notes{
+    width:100%; min-height:64px; padding:9px 11px; border:1px solid var(--line);
+    border-radius:4px; font-size:12.5px; font-family:inherit; resize:vertical;
+  }
+  .saved-tick{font-size:11px; color:var(--keep); opacity:0; transition:opacity .3s; display:block; margin-top:6px;}
+  .saved-tick.show{opacity:1;}
+
+  .empty{text-align:center; padding:50px 0; color:var(--slate); font-size:13.5px;}
+  .bottom-bar{display:flex; justify-content:center; margin:36px 0 8px;}
+  .bottom-bar .btn{padding:12px 22px; font-size:13.5px;}
+  .footer-note{margin-top:18px; font-size:11.5px; color:var(--slate); text-align:center;}
+  .loading{text-align:center; padding:60px 0; color:var(--slate); font-size:13px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <p class="eyebrow">IREMSC.ORG - SITE REBUILD / CONTENT INVENTORY</p>
+    <h1>Content Triage Worksheet</h1>
+    <p>Every page on the current site, what's actually on it, and where it could live in the new 6-page structure (Contact - About - Events - Classes - Resources - Grants). Mark each page Cut or Keep, pick a destination, and leave a note. Everyone on the team sees the same board - changes save automatically.</p>
+  </div>
+
+  <div class="contributors-section">
+    <p class="contrib-title">Information Contributors</p>
+    <p class="contrib-hint">Anyone who can answer questions about specific pages. Add yourself or a teammate below - everyone reviewing this board can then assign you as the decision maker on any page.</p>
+    <ul class="contrib-list" id="contribList"></ul>
+    <div class="contrib-add-row">
+      <input type="text" id="contribName" placeholder="Name">
+      <input type="email" id="contribEmail" placeholder="Email">
+      <button class="btn" id="contribAddBtn">Add</button>
+    </div>
+  </div>
+
+  <div class="summary" id="summary"></div>
+
+  <div class="legend">
+    <span><span class="dot" style="background:var(--cut)"></span> Cut</span>
+    <span><span class="dot" style="background:var(--keep)"></span> Keep</span>
+    <span><span class="dot" style="background:var(--undecided)"></span> Undecided</span>
+  </div>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search title, url, file, or link...">
+    <select class="statusfilter" id="statusFilter">
+      <option value="">All statuses</option>
+      <option value="cut">Cut</option>
+      <option value="keep">Keep</option>
+      <option value="undecided">Undecided</option>
+    </select>
+    <select class="parentfilter" id="parentFilter">
+      <option value="">All destinations</option>
+    </select>
+    <button class="btn ghost" id="resetBtn">Reset my view</button>
+  </div>
+
+  <details class="login-section" id="loginSection">
+    <summary>Logins &amp; access needed for integration</summary>
+    <div class="login-body">
+      <p class="hint">Check off whatever your web developer will need credentials or admin access to. This list is emailed straight to you when you click send below - it is never saved to the shared board above, and nobody else sees it.</p>
+      <div class="login-grid" id="loginGrid"></div>
+      <textarea id="loginCustom" rows="2" placeholder="Add any other services, one per line..."></textarea>
+      <div class="login-send-row">
+        <input type="email" id="loginEmail" placeholder="Send checklist to your email">
+        <button class="btn" id="sendLoginsBtn">Email me this checklist</button>
+        <span class="login-note" id="loginStatus"></span>
+      </div>
+    </div>
+  </details>
+
+  <div id="listings"><div class="loading">Loading review board...</div></div>
+
+  <div class="bottom-bar">
+    <button class="btn ghost" id="exportBtn">Export decisions (.json)</button>
+  </div>
+
+  <div class="footer-note">Crawled from iremsc.org - current as of June 2026 - decisions save to a shared database - anyone with this link sees the same board (syncs every ~15s).</div>
+</div>
+
+<script>
+const PARENTS = ["Contact","About","Events","Classes","Resources","Grants","Cut / Remove","Undecided"];
+
+const PAGES = [
+{id:"home", title:"Home", url:"https://iremsc.org/", suggested:"About",
+ description:"Landing page: mission statement, rotating announcements (symposium, Code Blue deadlines, blood bank ad), quick-link tiles to AHA classes/CME/standing orders, a generic stock 'features' section (Lorem ipsum placeholder copy - leftover template content, never finished), an embedded Google Map, and a newsletter sign-up.",
+ ext:[["Facebook","https://www.facebook.com/interioremscouncil/"],["LinkedIn","https://www.linkedin.com/in/interior-region-ems-council-inc-ab58051a0/"],["2026 Symposium registration (EventSquid)","https://www.eventsquid.com/event/30506"],["AHA eCard lookup","https://ecards.heart.org/student/myecards"],["CPR facts (AHA)","https://cpr.heart.org/en/resources/cpr-facts-and-stats"],["Blood Bank of Alaska","https://www.bloodbankofalaska.org/"],["EMS Vitals newsletter signup","https://public.govdelivery.com/accounts/AKDHSS/subscriber/new?topic_id=AKDHSS_37"],["Google Maps embed","https://www.google.com/maps/embed?pb=!1m14"]],
+ files:[]},
+
+{id:"about", title:"About", url:"https://iremsc.org/about/", suggested:"About",
+ description:"Mission statement, five organizational goals (training, data collection, equipment, communications, community outreach), 'About Us' paragraph on service region (236,000 sq mi), and office location block.",
+ ext:[], files:[]},
+
+{id:"staff", title:"Staff", url:"https://iremsc.org/about/staff/", suggested:"About",
+ description:"Staff directory with names, titles and email addresses (Executive Director, Fiscal Manager, Training Coordinator [vacant], Training & Resource Assistant [vacant], Projects Consultant, Administrative Assistant).",
+ ext:[], files:[]},
+
+{id:"board", title:"Board of Directors", url:"https://iremsc.org/about/board/", suggested:"About",
+ description:"Upcoming/last board meeting dates, then 12 board member cards (name, role, agency, seat type, term expiration). Several entries use a generic placeholder headshot.",
+ ext:[], files:[["IREMSC Strategic Plan (PDF)","https://iremsc.org/wp-content/uploads/2020/01/2018-strategic-plan-Final-18.11.02-2.pdf"],["Articles of Incorporation (PDF)","https://iremsc.org/wp-content/uploads/2020/10/Articles-of-Incorporation.pdf"],["By-Laws (PDF)","https://iremsc.org/wp-content/uploads/2025/05/Bylaws.2020.01-approved-20.01.17.pdf"],["Board Application (PDF)","https://iremsc.org/wp-content/uploads/2020/11/20.06.05-IREMSC-Board-Application-typeable.pdf"]],
+ links_internal:[["Meeting Minutes page (link present but page failed to load during this crawl - verify it still exists)","https://iremsc.org/meeting-minutes/"]]},
+
+{id:"region-area", title:"Interior Region Area", url:"https://iremsc.org/about/interior-region-area/", suggested:"About",
+ description:"Description of the 236,000 sq mi service area (Brooks Range to Alaska Range, Canadian border to Kaltag), a region map image, and a list of member fire/EMS departments with outbound links.",
+ ext:[["Chena Goldstream Fire & Rescue","http://www.cgfr.com/"],["Ester Volunteer Fire Dept.","http://esterfire.org/"],["Fairbanks Fire Dept","https://www.fairbanksalaska.us/fire"],["North Star Volunteer Fire Dept.","http://www.northstarfire.org/"],["North Pole Fire Dept.","https://www.northpolealaska.com/departments/fire/index.php"],["Steese Area Volunteer Fire Dept.","http://www.steesefire.org/"],["Tanana Chiefs Conference","http://www.tananachiefs.org/"],["Tri-Valley Fire Department","http://www.trivalleyfire.org/"],["University of Alaska Fire Dept.","http://www.uaf.edu/fire"]],
+ files:[]},
+
+{id:"regional-offices", title:"Regional Offices", url:"https://iremsc.org/grants-and-resources/regional-offices/", suggested:"Resources",
+ description:"Statewide table of the 7 Alaska EMS regional council offices (contact name, address, phone, email) plus a regions map image. Reference/contact data, not specific to IREMSC itself.",
+ ext:[], files:[]},
+
+{id:"cpr-bls", title:"CPR & First Aid / BLS", url:"https://iremsc.org/aha-ems-training/aha-training-center/aha-courses/cpr-first-aid-bls/", suggested:"Classes",
+ description:"Explains Heartsaver CPR/First Aid and HeartCode BLS courses, the 3 ways to get certified (blended course, onsite/contract, independent instructor), AHA online course pricing list, skills-check fee ($80), and reschedule/refund policy. Notes the classroom is upstairs with no accessibility option.",
+ ext:[["elearning.heart.org","http://www.onlineaha.org/"]], files:[]},
+
+{id:"acls-pals", title:"ACLS & PALS", url:"https://iremsc.org/aha-ems-training/aha-training-center/aha-courses/acls-pals/", suggested:"Classes",
+ description:"Blended-learning steps for ACLS/PALS certification, AHA online course pricing, IREMSC skills-check pricing, reschedule/refund policy, and a downloadable list of independent AHA instructors.",
+ ext:[["elearning.heart.org","http://www.onlineaha.org/"],["Course Calendar (Enrollware)","https://interioremscouncil.enrollware.com/schedule"]],
+ files:[["Master Instructor List (PDF)","https://iremsc.org/wp-content/uploads/2025/10/MASTER-Instructor-List-Available-for-Public-Services-per-MOU-2025.10.08-1.pdf"]]},
+
+{id:"ems-classes", title:"EMS/EMT/AEMT Classes", url:"https://iremsc.org/aha-ems-training/ems-classes/", suggested:"Classes",
+ description:"Course announcements: Alaska Instructor Course status, EMT-1/2/3/AEMT/ETT class dates (mostly 'TBD' or showing a closed Oct 2024 cohort - stale), UAF Paramedic Academy application link, and Fairbanks Memorial Hospital ALSO/BLSO obstetrics course info.",
+ ext:[["NAEMSE calendar","https://naemse.org/events/event_list.asp"],["UAF Paramedic Academy application","https://www.ctc.uaf.edu/academics/paramedic-application-process/"],["ALSO program info (AAFP)","https://www.aafp.org/cme/programs/also.html"],["BLSO program info (AAFP)","https://www.aafp.org/cme/programs/blso.html"]],
+ files:[["ALSO Brochure (PDF)","https://iremsc.org/wp-content/uploads/2025/08/ALSO-Brochure-10.20.25.pdf"]]},
+
+{id:"continuing-ed", title:"Continuing Education", url:"https://iremsc.org/aha-ems-training/continuing-education/", suggested:"Classes",
+ description:"CME hour-requirement tables by certification level, a free CME option via the State Moodle library, a long curated list of third-party online CME providers, an opioid-training grant opportunity (dated, likely expired May 2021), and an 'ECG Review' fun-link.",
+ ext:[["AK EMS Moodle library","https://learn.dhss.alaska.gov/"],["Alaska CME for EMTs (state site)","http://dhss.alaska.gov/dph/Emergency/Pages/ems/training/cme.aspx"],["Alaska Mandatory Child Abuse Report Training","https://education.alaska.gov/elearning/childabuse"],["The Addictions Academy","https://theaddictionsacademy.com/drug-and-alcohol-treatment-2/"],["Medic-CE","http://www.medic-ce.com/"],["MedicEd","http://mediced.com/"],["Boundtree University","https://www.boundtree.com/university/free-online-ceus"],["DistanceCME","http://www.distancecme.com/"],["National EMS Academy","http://www.onlinenemsa.com/"],["EMS1.com Academy","https://www.ems1academy.com/lp/individual-subscription/"],["Centrelearn EMS CME","https://www.centrelearn.com/login_ppv.asp"],["Medscape CME","http://www.medscape.org/multispecialty"],["Monroe-Livingston Regional EMS Council","https://www.mlrems.org/training/vodcasts/"],["The Jason Foundation","https://learn.jasonfoundation.com/courses/module-3/"],["Class Central","https://www.classcentral.com/collection/top-free-online-courses"],["SkillStat ECG simulator","https://www.skillstat.com/tools/ecg-simulator"],["BlueCloud by HealthCarePoint","https://www.healthcarepoint.com/services/global-education-network/"],["TargetSolutions","http://www.targetsolutions.com/"],["Life in the Fast Lane - ECG Review","https://litfl.com/ecg-library/"]],
+ files:[["State Approved CME Courses (PDF)","https://iremsc.org/wp-content/uploads/2024/07/2024_03_State_Approved_CME_List.pdf"],["NCCR Standardized Course Guide (PDF)","https://iremsc.org/wp-content/uploads/2021/02/NCCR-2016-V3-Standard-Course-to-SubTopics.pdf"],["What Counts as CME (PDF)","https://iremsc.org/wp-content/uploads/2020/11/WhatCountsAsCME.pdf"],["Paramedic Refresher flyer (PDF)","https://iremsc.org/wp-content/uploads/2025/12/Paramedic-Refresher.pdf-5.pdf"]]},
+
+{id:"instructor-resources", title:"EMS Instructor Resources", url:"https://iremsc.org/aha-ems-training/ems-instructor-resources/", suggested:"Classes",
+ description:"Large document library for EMT/ETT instructors and certifying officers: testing info, ETT forms, and equipment/objective/worksheet packets separately for EMT-1, EMT-2, EMT-3, and AEMT levels, plus misc course forms, applicant FAQs, instructor links (PowerPoint templates, moulage suppliers) and the IREMSC YouTube channel. One of the densest pages on the site - 35+ linked PDFs.",
+ ext:[["Online EMS Certification Portal","https://emsdata.chems.alaska.gov/licensure/public/alaska/portal#/login"],["Interested Person Report (DPS)","http://www.dps.state.ak.us/Statewide/background/"],["Driving Records (DMV)","http://doa.alaska.gov/dmv/akol/recordfx.htm"],["Medical PowerPoint Templates","http://www.medicineppt.com/"],["Moulage Concepts","http://www.moulageconcepts.com/"],["Moulage.net","http://www.moulage.net/index.html"],["IREMSC YouTube Channel","https://www.youtube.com/channel/UC_v9MgCylyh08XPI7M-nRUA"]],
+ files:[["Guide to EMT Instructors & Certifying Officers","https://iremsc.org/wp-content/uploads/2020/11/Guide_to_EMT-Instructors__Certifying_Officers_Draft15.06.08.pdf"],["2019 Testing Information","https://iremsc.org/wp-content/uploads/2020/11/2019_Testing_Info.pdf"],["EMT Practical Exam Testing Sheets","https://iremsc.org/wp-content/uploads/2020/11/Alaska_EMT_Practical_Exam_Testing_Sheets.pdf"],["ETT Course Roster","https://iremsc.org/wp-content/uploads/2020/11/ETT_CourseRoster.pdf"],["ETT Policies","https://iremsc.org/wp-content/uploads/2021/02/ETT-Registration-Policies-2017.pdf"],["ETT Schedule (image)","https://iremsc.org/wp-content/uploads/2020/11/ETTSchedule.png"],["ETT Learning Objectives","https://iremsc.org/wp-content/uploads/2020/11/ETT_ObjectivesandMinimumCompetencies.pdf"],["Recommended ETT Equipment List","https://iremsc.org/wp-content/uploads/2021/02/ETT-Equip.pdf"],["Recommended ETT Refresher Equipment List","https://iremsc.org/wp-content/uploads/2021/02/ETTR_EquipLIst.pdf"],["ETT Skill Sheets","https://iremsc.org/wp-content/uploads/2020/11/ETT_SkillsSheet.pdf"],["EMR to ETT Fact Sheet","https://iremsc.org/wp-content/uploads/2020/11/EMRtoETTFactSheet.pdf"],["EMT-1 2019 Objectives & Lesson Plan","https://iremsc.org/wp-content/uploads/2021/03/EMT1-Alaska-Specific-Objectives-Final-21.03.19.pdf"],["EMT-1 Transition Objectives & Lesson Plan","https://iremsc.org/wp-content/uploads/2021/03/EMT1-Transition-to-2019-EMT1-Alaska-Specific-Objectives-rev-21.03.19.pdf"],["EMT-1 Verification of Completion","https://iremsc.org/wp-content/uploads/2021/05/EMT1_Verification_of_Completion_2019Transition.pdf"],["EMT-1/2/3 Transition Student Worksheet","https://iremsc.org/wp-content/uploads/2021/05/EMT1_2_3_Transition_Student_Worksheet.pdf"],["Suggested EMT-1 Equipment List","https://iremsc.org/wp-content/uploads/2021/02/EMT_1_Equip.pdf"],["Suggested EMT-1 Refresher Equipment List","https://iremsc.org/wp-content/uploads/2021/03/EMT-1_R_EquipList.pdf"],["Example EMT-1 Schedule","https://iremsc.org/wp-content/uploads/2021/03/EMT-1_full-course-schedule-Spring-2021-Sheet1-1-1.pdf"],["EMT Education Standards","https://iremsc.org/wp-content/uploads/2021/03/EMT-1_Instructional_Guidelines.pdf"],["Using i-gels","https://iremsc.org/wp-content/uploads/2021/03/EMT-1_igel_poster_UK_2.pdf"],["Arctic Variant CPT1A Video (YouTube)","https://www.youtube.com/watch?v=ZBJB6gLAr4Q"],["EMT-2 Objectives","https://iremsc.org/wp-content/uploads/2021/03/EMT-2_ObjLessonPlan20.12.14.pdf"],["EMT-2 Preparatory Workbook","https://iremsc.org/wp-content/uploads/2021/03/EMT-2_Preparatory_Workbook.pdf"],["EMT-2 Vocabulary","https://iremsc.org/wp-content/uploads/2021/03/EMT-2_Vocab.pdf"],["EMT-2 Transition Course Objectives","https://iremsc.org/wp-content/uploads/2021/03/EMT-2_2019_Transition_Course_ObjLesson_Plan.pdf"],["EMT-2 Verification of Completion","https://iremsc.org/wp-content/uploads/2021/05/EMT2_Verification_of_Completion_2019Transition.pdf"],["EMT-2 Initial Student Skills Worksheet (DOCX)","https://iremsc.org/wp-content/uploads/2021/04/EMT2_Initial_Student_Worksheet.docx"],["Suggested EMT-2 Equipment List","https://iremsc.org/wp-content/uploads/2021/03/EMT-2_Supply-List.pdf"],["Suggested EMT-2 Refresher Equipment List","https://iremsc.org/wp-content/uploads/2021/03/EMT-2_R_EquipList-1.pdf"],["Capnography - Measuring Life & Breath","https://iremsc.org/wp-content/uploads/2021/03/EMT-2_Capnography-MeasuringLifeandBreath_JEMS_Dec2010.pdf"],["Capnography - Supplement","https://iremsc.org/wp-content/uploads/2021/03/EMT-2_CapnographyOridion_2012_Supplement.pdf"],["Capnography - Common Waves","https://iremsc.org/wp-content/uploads/2021/03/EMT-2_ETCO2_common_waveforms.pdf"],["Femoral IO","https://iremsc.org/wp-content/uploads/2021/03/EMT-2_Femoral_IO.pdf"],["Labeling Changes to Critical Care Medication","https://iremsc.org/wp-content/uploads/2021/03/EMT-2_Label_changes_FDA.pdf"],["Burn Stabilization Protocol","https://iremsc.org/wp-content/uploads/2021/03/EMT-2_provider-resource-uw-burn-protocol.pdf"],["TXA Drip Rates","https://iremsc.org/wp-content/uploads/2021/03/EMT-2_TXA_Drip_Set.pdf"],["EMT-3 Objective","https://iremsc.org/wp-content/uploads/2021/03/EMT-3_Transition_t_2019_EMT3_ObjLesson_Plan.pdf"],["EMT-3 Transition Objective","https://iremsc.org/wp-content/uploads/2021/03/21.01.20-EMT-3-Transition-to-2019-EMT-3-Objectives-and-Lesson-Plan.pdf"],["EMT-3 Verification of Completion","https://iremsc.org/wp-content/uploads/2021/05/EMT3_Verification_of_Completion_2019Transition..pdf"],["Suggested EMT-3 Equipment List","https://iremsc.org/wp-content/uploads/2021/03/EMT-3_EquipList-2.pdf"],["Cardioversion Pacing Example","https://iremsc.org/wp-content/uploads/2021/03/EMT-3_Cardioverson_Pacing_Example.pdf"],["AK EMT-3 to AEMT Objectives","https://iremsc.org/wp-content/uploads/2021/03/EMT3_to_AKAEMT_Transition_ObjLesson_Plans_-w_equipment_and_schedule.pdf"],["NRAEMT to AKAEMT Objectives","https://iremsc.org/wp-content/uploads/2021/03/NRAEMT_to_AKAEMT_ObjLesson_Plans.pdf"],["AEMT Transition Verification & Worksheet","https://iremsc.org/wp-content/uploads/2021/05/AK-AEMT_Verification_of_Completion_2019Transition.pdf"],["AEMT Instructional Guidelines","https://iremsc.org/wp-content/uploads/2021/03/NHTSA_ADV_EMT_Instructional_Guidelines.pdf"],["Using Nasal Midazolam","https://iremsc.org/wp-content/uploads/2021/03/EMT-1_SCHMAD.pdf"],["Sample Class Roster","https://iremsc.org/wp-content/uploads/2020/11/Sample_class_roster.pdf"],["Practice Scenarios","https://iremsc.org/wp-content/uploads/2020/11/Practice_Scenarios.pdf"],["Course Evaluation (sample)","https://iremsc.org/wp-content/uploads/2020/11/SampleCourseEvaluation.pdf"],["EMS Psychomotor Portfolio","https://iremsc.org/wp-content/uploads/2021/03/MasterPortfolio_03.17.21.pdf"],["Criminal Convictions FAQ","https://iremsc.org/wp-content/uploads/2021/02/ConvictionFAQ.pdf"]]},
+
+{id:"student-resources", title:"EMS Student Resources", url:"https://iremsc.org/aha-ems-training/student-resources/", suggested:"Classes",
+ description:"Short page directing students to the State EMS Certification portal for applying/recertifying and checking certification status; one phone number for the Training Coordinator.",
+ ext:[], files:[]},
+
+{id:"cpr-instructor-resources", title:"CPR Instructor Resources", url:"https://iremsc.org/aha-ems-training/aha-training-center/cpr-instructor-resources/", suggested:"Classes",
+ description:"The single largest page on the site. AHA 2025 update instructions, Enrollware/ATLAS account links, and full sets of rosters/skills-checklists/evaluations for Heartsaver, BLS, ACLS, and PALS courses (60+ PDFs), plus instructor renewal policy, renewal/transfer forms, and two contact tables: 'Training Center Faculty' monitors (12 people) and 'AHA Instructors Available to Teach' (30 people) with phone numbers and personal emails.",
+ ext:[["ShopCPR.heart.org","https://shopcpr.heart.org/"],["AHA Guidelines webinars","https://cpr.heart.org/en/resuscitation-science/the-guidelines-virtual-experience"],["2025 AHA Guidelines","https://cpr.heart.org/news-and-events/science-and-guidelines"],["Enrollware admin login","https://www.enrollware.com/admin/login.aspx"],["AHA Instructor Network - ATLAS","http://www.atlas.heart.org"],["AHA Student site","http://www.heart.org/eccstudent"],["Primary Instructor Transfer Packet (Adobe)","https://acrobat.adobe.com/id/urn:aaid:sc:US:aa308b40-ff7f-4cf0-b923-033700935849"],["Secondary Instructor Transfer Packet (Adobe)","https://acrobat.adobe.com/id/urn:aaid:sc:US:cab6783f-84d3-4288-b547-741ab201255b"]],
+ files:[["Heartsaver Roster","https://iremsc.org/wp-content/uploads/2021/02/HS-Updated-Roster.pdf"],["Heartsaver Program Evaluation","https://iremsc.org/wp-content/uploads/2022/08/2021-HS-Course-Evaluation.pdf"],["Heartsaver Adult CPR/AED Skills Sheet","https://iremsc.org/wp-content/uploads/2021/03/HS-CPR-AED-Skills-Checklist.pdf"],["Heartsaver Child CPR/AED Skills Sheet","https://iremsc.org/wp-content/uploads/2021/03/HS-Child-CPR-Skills-Checklist.pdf"],["Heartsaver Infant CPR/AED Skills Sheet","https://iremsc.org/wp-content/uploads/2021/03/HS-Infant-CPR-Skills-Checklist.pdf"],["Heartsaver First Aid Skills Sheet","https://iremsc.org/wp-content/uploads/2021/03/HS-FA-Skills-Checklist.pdf"],["Heartsaver CPR/AED Equipment List","https://iremsc.org/wp-content/uploads/2021/03/HS-CPR-AED-Equipment-List.pdf"],["Heartsaver First Aid Equipment List","https://iremsc.org/wp-content/uploads/2021/03/HS-FA-Equipment-List.pdf"],["CPR FAQs","https://iremsc.org/wp-content/uploads/2021/03/CPR-FAQs.pdf"],["First Aid FAQs","https://iremsc.org/wp-content/uploads/2021/03/FA-FAQs.pdf"],["BLS Course Roster","https://iremsc.org/wp-content/uploads/2021/02/BLS-Roster.pdf"],["Adult BLS Skills Sheet","https://iremsc.org/wp-content/uploads/2021/02/BLS-Skills-Checklist.pdf"],["Infant BLS Skills Sheet","https://iremsc.org/wp-content/uploads/2021/02/BLS-Infant-Skills-Checklist.pdf"],["BLS Course Evaluation","https://iremsc.org/wp-content/uploads/2021/02/BLS-Course-Evaluation.pdf"],["BLS Equipment List","https://iremsc.org/wp-content/uploads/2021/02/BLS-Equipment-List.pdf"],["ACLS Agenda - 12 students","https://iremsc.org/wp-content/uploads/2021/02/ACLS-Sample-Agenda-12-Students.pdf"],["ACLS Agenda - Traditional","https://iremsc.org/wp-content/uploads/2021/02/ACLS-Traditional-Course-Agenda.pdf"],["ACLS Agenda - Update","https://iremsc.org/wp-content/uploads/2021/02/ACLS-Update-Agenda.pdf"],["ACLS Course Roster","https://iremsc.org/wp-content/uploads/2021/02/ACLS-Roster.pdf"],["ACLS Course Evaluation","https://iremsc.org/wp-content/uploads/2021/02/ACLS-Course-Evaluation.pdf"],["2020 Science Summary Table","https://iremsc.org/wp-content/uploads/2021/02/ACLS-2020-Science-Summary-Table.pdf"],["ACLS Equipment List","https://iremsc.org/wp-content/uploads/2021/02/ACLS-Equipment-Checklist.pdf"],["ACLS Code Time/Recorder Sheets","https://iremsc.org/wp-content/uploads/2021/02/ACLS-Code-Time_Recorder-Sheets.pdf"],["ACLS Learning Station Checklists","https://iremsc.org/wp-content/uploads/2021/02/ACLS-Learning-Station-Checklists.pdf"],["ACLS High-Quality BLS Checklist","https://iremsc.org/wp-content/uploads/2021/02/ACLS-High-Quality-BLS-Checklist.pdf"],["ACLS Airway Mgmt Checklist","https://iremsc.org/wp-content/uploads/2020/10/ACLS-BVM-Testing-Checklist-2011.pdf"],["ACLS HeartCode Lesson Plans","https://iremsc.org/wp-content/uploads/2020/10/HeartCode-ACLS-Lesson-Plans.pdf"],["ACLS Megacode Checklist 1-3-8","https://iremsc.org/wp-content/uploads/2021/02/ACLS-Megacode-Checklist-1-3-8.pdf"],["ACLS Megacode Checklist 2-5","https://iremsc.org/wp-content/uploads/2021/02/ACLS-Megacode-Checklist-2-5.pdf"],["ACLS Megacode Checklist 4-7-10","https://iremsc.org/wp-content/uploads/2021/02/ACLS-Megacode-Checklist-4-7-10.pdf"],["ACLS Megacode Checklist 6-11","https://iremsc.org/wp-content/uploads/2021/02/ACLS-Megacode-Checklist-6-11.pdf"],["ACLS Megacode Checklist 9","https://iremsc.org/wp-content/uploads/2021/02/ACLS-Megacode-Checklist-9.pdf"],["ACLS Megacode Checklist 12","https://iremsc.org/wp-content/uploads/2021/02/ACLS-Megacode-Checklist-12.pdf"],["PALS Agenda - Classroom","https://iremsc.org/wp-content/uploads/2021/02/PALS-Sample-Agenda.pdf"],["PALS Agenda - w/ optional lessons","https://iremsc.org/wp-content/uploads/2021/02/PALS-Sample-Agenda-with-Optional-Lessons.pdf"],["PALS Agenda - w/o optional lessons","https://iremsc.org/wp-content/uploads/2021/02/PALS-Sample-Agenda-without-Optional-Lessons.pdf"],["PALS/PEARS Course Roster","https://iremsc.org/wp-content/uploads/2021/02/PALS-Roster.pdf"],["PALS Course Progress Checklist","https://iremsc.org/wp-content/uploads/2021/02/PALS-Course-Progress-Checklist.pdf"],["PALS Course Evaluation","https://iremsc.org/wp-content/uploads/2021/02/PALS-Course-Evaluation.pdf"],["PALS Equipment List","https://iremsc.org/wp-content/uploads/2021/02/PALS-Equipment-List.pdf"],["PALS Testing Checklists","https://iremsc.org/wp-content/uploads/2021/02/PALS-Testing-Checklists.pdf"],["PALS Rhythm Disturbance Checklist","https://iremsc.org/wp-content/uploads/2021/02/PALS-Rhythm-Disturbance-Skills-Checklist.pdf"],["PALS Vascular Access Checklist","https://iremsc.org/wp-content/uploads/2021/02/PALS-Vascular-Access-Checklist.pdf"],["PALS Airway Management Checklist","https://iremsc.org/wp-content/uploads/2021/02/PALS-Airway-Management-Checklist.pdf"],["PALS Child CPR/AED Checklist","https://iremsc.org/wp-content/uploads/2021/02/PALS-Child-CPR-AED-Checklist.pdf"],["PALS Infant CPR Checklist","https://iremsc.org/wp-content/uploads/2021/02/PALS-Infant-CPR-Checklist.pdf"],["PALS Case Scenario Checklists","https://iremsc.org/wp-content/uploads/2021/02/PALS-Case-Scenario-Checklists.pdf"],["PALS Resp. Emergencies Flowchart","https://iremsc.org/wp-content/uploads/2021/02/PALS-Recognition-of-Resp-Emergencies-Flowchart.pdf"],["PALS Mgmt of Resp. Emergencies Flowchart","https://iremsc.org/wp-content/uploads/2021/02/PALS-Mgmt-of-Resp-Emergencies-Flowchart.pdf"],["PALS Recognition of Shock Flowchart","https://iremsc.org/wp-content/uploads/2021/02/PALS-Recognition-of-Shock-Flowchart.pdf"],["PALS Mgmt of Shock Flowchart","https://iremsc.org/wp-content/uploads/2021/02/PALS-Management-of-Shock-Flowchart.pdf"],["PALS Systems Approach Algorithm","https://iremsc.org/wp-content/uploads/2021/02/PALS-System-Approach-Algorithm.pdf"],["PALS Systems Approach Summary","https://iremsc.org/wp-content/uploads/2020/10/System-Approach-Summ.pdf"],["PALS Team Dynamics Debrief Tool","https://iremsc.org/wp-content/uploads/2021/02/PALS-Team-Dynamic-Debrief-Tool.pdf"],["PALS Team Role Labels","https://iremsc.org/wp-content/uploads/2020/10/Team-Role-Labels.pdf"],["ACLS & PALS Instructor Course Roster","https://iremsc.org/wp-content/uploads/2020/10/ACLS_Instructor_Course_Roster.pdf"],["BLS Instructor Course Roster","https://iremsc.org/wp-content/uploads/2020/10/BLS_Instructor_Course_Roster.pdf"],["BLS Instructor Course Evaluation","https://iremsc.org/wp-content/uploads/2020/10/2016-BLS-instructor-course-evaluation.pdf"],["Heartsaver Instructor Course Evaluation","https://iremsc.org/wp-content/uploads/2020/10/Heartsaver-inst.-eval.-9-16.pdf"],["ACLS Instructor Course Evaluation","https://iremsc.org/wp-content/uploads/2020/10/2016-ACLS-instructor-course-eval.pdf"],["PALS Instructor Course Evaluation","https://iremsc.org/wp-content/uploads/2020/10/Pals-inst.-eval-9-16.pdf"],["PEARS Instructor Course Evaluation","https://iremsc.org/wp-content/uploads/2020/10/PEARS-inst.-eval-9-16.pdf"],["TC Policies & Procedures (incl. CPR Card Policy)","https://iremsc.org/wp-content/uploads/2025/10/IREMSC-TC-Policy-and-Procedures_Rev-2025.06.26.format-updated-2025.09.pdf"],["Rental Account Application - COD","https://iremsc.org/wp-content/uploads/2024/12/COD-Account-Application-Instructor-Rental.pdf"],["Credit Card Authorization Form","https://iremsc.org/wp-content/uploads/2024/12/Credit-Card-Authorization-Form.pdf"],["Instructor Renewal Checklist & Monitoring Form","https://iremsc.org/wp-content/uploads/2026/02/Instructor.Renewal.Checklists.Monitoring.Form-rev260220.pdf"],["New Instructor Checklist Packet","https://iremsc.org/wp-content/uploads/2026/05/New-Instructor-Packet-Combined_2026.5.pdf"]]},
+
+{id:"aha-instructor-courses", title:"AHA Instructor Courses", url:"https://iremsc.org/aha-ems-training/aha-training-center/aha-courses/iremsc-aha-instructor-courses/", suggested:"Classes",
+ description:"How to become an AHA instructor (ACLS/BLS/Heartsaver/PALS): prerequisite provider card, required AHA online Instructor Essentials course, then the IREMSC in-person instructor course. Pricing for both online and in-person components.",
+ ext:[["elearning.heart.org","http://www.onlineaha.org/"]], files:[]},
+
+{id:"equipment-rentals", title:"Equipment Rentals", url:"https://iremsc.org/supplies/equipment-rentals/", suggested:"Resources",
+ description:"Explains the rental process and policies (booking lead time, expediting fee, shipping, late fees, liability - very long policy text), with an embedded online rental order form (name/address/items/dates) that would need rebuilding as a real form, not static content.",
+ ext:[], files:[["EMT Class Equipment Request","https://iremsc.org/wp-content/uploads/2020/11/EMT_ClassEquipmentRequest_16.08.25Typeable.pdf"],["ETT Class Equipment Request","https://iremsc.org/wp-content/uploads/2020/11/ETT_ClassEquipmentRequestTypeable_16.09.08.pdf"],["CPR Equipment Request (v1)","https://iremsc.org/wp-content/uploads/2020/11/CPR_ClassEquipmentRequest_16.08.25.pdf"],["CPR Equipment Request (current)","https://iremsc.org/wp-content/uploads/2024/08/IREMSC-CPR-Class-Equipment-Request-2024.08.02.pdf"],["Supply & Rental Catalog","https://iremsc.org/wp-content/uploads/2025/09/Supply-Rental-Catalog-rev-25.09.09-Formatting-and-addtl-items-approved-by-BOD-25.6.11.pdf"]]},
+
+{id:"supplies", title:"Supplies", url:"https://iremsc.org/supplies/", suggested:"Resources",
+ description:"One paragraph: IREMSC resells individual ambulance supplies normally bought in bulk. Points to the same Supply & Rental Catalog PDF used on the Equipment Rentals page.",
+ ext:[], files:[["Supply & Rental Catalog (duplicate link)","https://iremsc.org/wp-content/uploads/2025/09/Supply-Rental-Catalog-rev-25.09.09-Formatting-and-addtl-items-approved-by-BOD-25.6.11.pdf"]]},
+
+{id:"classroom-rentals", title:"Classroom Rentals", url:"https://iremsc.org/supplies/classroom-rentals/", suggested:"Resources",
+ description:"30-person classroom rental rates (day/evening/full-day), usage rules, and booking lead-time requirements, with an embedded rental request form (name, dates, rental type, comments).",
+ ext:[], files:[]},
+
+{id:"grants-resources-main", title:"Grants and Resources (hub)", url:"https://iremsc.org/grants-and-resources/", suggested:"Resources",
+ description:"'Agency Resources' hub: business forms (credit application, credit card auth, ACH), EMS agency forms (ambulance survey, sample medical director agreement), and operational documents (FNSB standing orders, medical director handbook). Mostly a flat list of PDF links with little framing text - a strong candidate to fold into a broader Resources page.",
+ ext:[], files:[["IREMSC Credit Application","https://iremsc.org/wp-content/uploads/2020/11/IREMSC_Business_Forms_updated15.11.05-typeable.pdf"],["Credit Card Authorization Form","https://iremsc.org/wp-content/uploads/2020/11/CreditCardAuthorizationFormTypeable-rev-20.06.18.pdf"],["IREMSC ACH Form","https://iremsc.org/wp-content/uploads/2020/11/IREMSC-ACH-AUTH-FORMTypeable-2020.pdf"],["Ambulance Survey","https://iremsc.org/wp-content/uploads/2020/11/2019IREMSCAmbulanceSurvey20.05.18-typeable.pdf"],["Sample Medical Director Agreement Letter","https://iremsc.org/wp-content/uploads/2020/11/SampleEMSAgencyMedicalDirectorAgreement.pdf"],["FNSB Standing Orders (2022 copy)","https://iremsc.org/wp-content/uploads/2022/03/2022-Standing-Orders-Q1-1.pdf"],["Medical Directors Handbook","https://iremsc.org/wp-content/uploads/2020/11/EMSMedicalDirectorHandbook.pdf"]]},
+
+{id:"aurora", title:"AURORA Data Collection", url:"https://iremsc.org/grants-and-resources/aurora-data-collection/", suggested:"Resources",
+ description:"Explains the state-sponsored AURORA ePCR program and its relationship to NEMSIS (the national EMS data standard); notes certified ambulance services must use AURORA-Elite.",
+ ext:[], files:[]},
+
+{id:"code-blue", title:"Code Blue Projects", url:"https://iremsc.org/grants-and-resources/regional-offices/code-blue-projects/", suggested:"Grants",
+ description:"History and mechanics of the statewide Code Blue equipment grant program, what it funds (ambulances, snowmachines, ATVs, monitors, radios - equipment only, not training/expendables), and how/when Interior Region agencies apply (fall application, mid-January deadline).",
+ ext:[], files:[["FY27 Application Packet","https://iremsc.org/wp-content/uploads/2026/02/FY27_Application_Packet.pdf"],["Code Blue Brochure","https://iremsc.org/wp-content/uploads/2025/02/IREMSC-Code-Blue-Brochure.pdf"],["Code Blue Policy Manual","https://iremsc.org/wp-content/uploads/2026/02/2_25.12.17-Code-Blue-Manual.pdf"],["Equipment Transfer / Lost / Stolen Item Form","https://iremsc.org/wp-content/uploads/2020/11/TransferLostUnservicableorStolenItemReport_REV2020.pdf"]]},
+
+{id:"mini-grants", title:"Mini-Grants", url:"https://iremsc.org/grants-and-resources/regional-offices/mini-grants/", suggested:"Grants",
+ description:"Explains operational mini-grants for rural, volunteer-reliant EMS services (training, equipment, insurance, fuel); not open to publicly-funded municipal/borough systems. Includes startup-grant application steps and a note that the 2026 cycle opens after July 1, 2026.",
+ ext:[["Startup Mini-Grant Application (Google Form)","https://docs.google.com/forms/d/e/1FAIpQLSe-4ktJkOtGyKCLLoNeux5tkYgNnEVtaZbvV7e9cHN6LBk1Og/viewform"],["Ambulance Survey (Google Form)","https://forms.gle/k9og9LTGTJ1mKnHWA"]],
+ files:[["Mini-Grant Policy","https://iremsc.org/wp-content/uploads/2025/11/Reference-A-Mini-Grant-Policy-IREMSC-25.11.25.pdf"],["Mini-Grant Purchasing Policy","https://iremsc.org/wp-content/uploads/2025/01/Reference-B-Mini-Grant-Purchasing-Policy-Appendix-B.pdf"],["Mini-Grant Equipment Checklist","https://iremsc.org/wp-content/uploads/2025/01/3-Mini-Grant-Equipment-List-Appendix-C-Fillable.pdf"],["Ambulance Survey (fillable PDF)","https://iremsc.org/wp-content/uploads/2025/09/2025.09.05-EMS-Survey-FINAL.pdf"],["Mini-Grant Expense Report Form","https://iremsc.org/wp-content/uploads/2025/11/Mini-Grant-Expense-From-FY26_typeable.pdf"]]},
+
+{id:"misc-grants", title:"Misc Grants", url:"https://iremsc.org/grants-and-resources/regional-offices/misc-grants/", suggested:"Grants",
+ description:"Short list of outside grant-making organizations relevant to EMS services. No IREMSC-specific content.",
+ ext:[["Rasmuson Foundation","https://www.rasmuson.org/"],["USDA Rural Development Grants","https://www.rd.usda.gov/programs-services/all-programs"],["Denali Commission","https://www.denali.gov/programs/"],["EMS1 EMS Grants","https://www.ems1.com/ems-grants/"],["Firehouse Subs Public Safety Foundation Grants","http://grants.firehousesubs.com/"]],
+ files:[]},
+
+{id:"general-public-info", title:"General Public Info", url:"https://iremsc.org/grants-and-resources/general-public-info/", suggested:"Resources",
+ description:"A grab-bag of public-facing links: Safe Surrender of Infants FAQ, poison control, CDC, NHTSA, OSHA, university EMS programs, rural health resource hubs, and a citation to a 2021 academic paper on ambulance equipment standards.",
+ ext:[["Alaska Poison Control System","http://www.dhss.alaska.gov/dph/Chronic/Pages/InjuryPrevention/Poison/Default.aspx"],["National Poison Prevention Center","https://aapcc.org/Prevention/nppw"],["CDC","https://www.cdc.gov/"],["NHTSA","https://www.nhtsa.gov/"],["OSHA","http://www.osha.gov/"],["UAF Paramedicine Program","https://www.ctc.uaf.edu/programs/paramedicine/"],["UMBC Emergency Health Services Dept.","http://ehs.umbc.edu/"],["National Rural Health Resource Center","https://www.ruralcenter.org/"],["Rural Health Information Hub - EMS","https://www.ruralhealthinfo.org/topics/emergency-medical-services"],["Recommended Essential Equipment for Ambulances 2020 (journal article)","https://www.tandfonline.com/doi/full/10.1080/10903127.2021.1886382"],["George Washington Univ. EHS Program (link dead/redirects)","http://www.gwumc.edu/"]],
+ files:[["Safe Surrender of Infants Act FAQ","https://iremsc.org/wp-content/uploads/2020/11/SafeSurrenderofInfantsActGuidance.pdf"],["Help Along the Way Pamphlet","https://iremsc.org/wp-content/uploads/2020/11/HelpAlongHighwayPamphlet.pdf"],["EMSC Education and Training (2013)","https://iremsc.org/wp-content/uploads/2020/11/EMSC-Education-and-Training-1-2013.pdf"]]},
+
+{id:"regional-resources", title:"Regional Resources", url:"https://iremsc.org/grants-and-resources/regional-resources/", suggested:"Resources",
+ description:"Archive of FNSB regional Standing Orders by year (2019-2024) for agencies/medical directors to use as drafting examples, plus national NHTSA Scope of Practice model documents. Several outdated copies kept alongside the current one.",
+ ext:[], files:[["FNSB Standing Orders - 2024","https://iremsc.org/wp-content/uploads/2024/02/2024-FNSB-Standing-Orders.pdf"],["Regional Standing Orders - 2022","https://iremsc.org/wp-content/uploads/2022/03/2022-Standing-Orders-Q1-1.pdf"],["Regional Standing Orders - 2021","https://iremsc.org/wp-content/uploads/2021/03/21.03.17-FNSB-Standing-orders.pdf"],["Regional Standing Orders - 2019","https://iremsc.org/wp-content/uploads/2021/03/FNSB_SO_REVISED_06.2019.pdf"],["NHTSA National Scope of Practice Model 2019","https://iremsc.org/wp-content/uploads/2021/03/National_EMS_Scope_of_Practice_Model_2019.pdf"],["NHTSA 2019 SOP Model Change Notices 1&2","https://iremsc.org/wp-content/uploads/2021/03/NHTSA.2019SOPM.ChangeNotices.One_.and_.Two_.032921-1.pdf"]]},
+
+{id:"state-ems", title:"State Office of EMS", url:"https://iremsc.org/state-resources-2/state-ems/", suggested:"Resources",
+ description:"Overview of the State Office of EMS, plus a stack of COVID-era certification/course bulletins from 2020-2021 (extensions, recertification modifications, reinstatement, interim policy on courses/exams) that are now obsolete, alongside still-relevant links to the state EMS site, certification portal, and newsletter.",
+ ext:[["State of Alaska EMS website","http://dhss.alaska.gov/dph/Emergency/Pages/ems/default.aspx"],["EMS Certification (apply/check status)","http://dhss.alaska.gov/dph/Emergency/Pages/ems/certification.aspx"],["EMS Vitals Newsletter (signup/archive)","http://dhss.alaska.gov/dph/Emergency/Pages/newsletter.aspx"],["Alaska EMS Administrative Code","http://www.legis.state.ak.us/basis/aac.asp#7.26"]],
+ files:[["TXA in Head Injured Patients (Trauma System Review)","https://iremsc.org/wp-content/uploads/2021/04/2021_TXA_prehospital_TSRC.pdf"],["4/10/2020 Certification Extension Notice","https://iremsc.org/wp-content/uploads/2020/11/SOA-EMS-2020.04.10-ExtensionMay312021.pdf"],["5/1/2020 Recertification Modifications","https://iremsc.org/wp-content/uploads/2020/11/SOAEMS_2020.05.01_RecertificationModifications.pdf"],["5/19/2020 Emergency Reinstatement of Lapsed Certs","https://iremsc.org/wp-content/uploads/2020/11/SOA-EMS-2020.05.19-Certification-Reinstatement-2.edited.pdf"],["4/21/2021 EMT-1 Transition Memo","https://iremsc.org/wp-content/uploads/2021/04/SOA_EMS_2021.04.21_EMT-1_Transition_2019_Scope.pdf"],["5/1/2020 Interim Policy on Courses & Exams","https://iremsc.org/wp-content/uploads/2020/11/SOAEMS_2020.05.01InterimPolicyonCoursesandExams.pdf"],["9/17/2020 Updated Interim Policy (Courses/Exams/Provisional Certs)","https://iremsc.org/wp-content/uploads/2021/03/SOA-EMS2020.09.17_Courses_Exams_and_Provisional_Certifications_Update_Alaska_EMS.pdf"],["2014 Alaska EMS Reassessment (NHTSA-TAT)","https://iremsc.org/wp-content/uploads/2021/05/2014-Alaska-EMS-Reassessment-Final-Report-2014.pdf"],["National EMS Agenda 2050","https://iremsc.org/wp-content/uploads/2021/05/EMS-Agenda-2050.pdf"],["National EMS Education Agenda 2010","https://iremsc.org/wp-content/uploads/2021/05/EMS_Education_Agenda_2010.pdf"]]},
+
+{id:"ems-regulations", title:"EMS Regulations", url:"https://iremsc.org/state-resources-2/ems-regulations/", suggested:"Resources",
+ description:"Links to the official 7 AAC 26 EMS regulations and referenced scope-of-practice/instructor-certification documents, plus a 2021 section on the transition from Alaska's 'Comfort One' end-of-life program to POLST, with patient/provider brochures (some hosted on a different region's site, sremsc.org).",
+ ext:[["AK Legislature - EMS Regulation","http://www.akleg.gov/basis/aac.asp#7.26"],["2002 National Guidelines for Instructor Education (NHTSA site)","https://one.nhtsa.gov/people/injury/ems/instructor/instructor_ems/2002_national_guidelines.htm"],["Comfort One info for patients/providers","http://dhss.alaska.gov/dph/Emergency/Pages/ems/programs/comfort_one.aspx"],["Comfort One FAQ (hosted on sremsc.org)","https://www.sremsc.org/wp-content/uploads/2019/10/Comfort_One_FAQ.pdf"],["Comfort One Family Brochure (sremsc.org)","https://www.sremsc.org/wp-content/uploads/2019/10/ComfortOneFAMILY-8-14.pdf"],["Comfort One Provider Brochure (sremsc.org)","https://www.sremsc.org/wp-content/uploads/2019/10/ComfortOnePROVIDERS-8-14.pdf"]],
+ files:[["7 AAC 26 EMS Regulations","https://iremsc.org/wp-content/uploads/2023/01/EMS-Regulations.pdf"],["2019 Alaska Scope of Practice","https://iremsc.org/wp-content/uploads/2021/02/2019-SOA-Scope-of-Practice.pdf"],["Guide for EMS Instructors & Certifying Officers (Appx A)","https://iremsc.org/wp-content/uploads/2021/02/2017200794-ABR-SOA-Guide-for-Emergency-Medical-Services-Certification-Licensure.pdf"],["2002 National Guidelines for Instructor Education (PDF)","https://iremsc.org/wp-content/uploads/2020/11/DPH.EMS_.Adop_.Ref_.2002NationalGuidelinesInstructorEdu.2017200794.03.21.18.pdf"],["National EMS Education Standards","https://iremsc.org/wp-content/uploads/2020/11/DPH.EMS_.Adop_.Ref_.Amendments.NationalEMSEdu.Standards.2017200794.03.21.2018.pdf"],["FAQ: Transitioning to 2019 Regulations","https://iremsc.org/wp-content/uploads/2021/03/AlaskaEMS_Regulations_Update_FAQ_2020.10-Revised.pdf"],["POLST Program","https://iremsc.org/wp-content/uploads/2021/04/2019200825-ABR-DHSS-Physician_Orders_for_Life_Sustaining_Treatment_Program.pdf"],["POLST Form","https://iremsc.org/wp-content/uploads/2021/04/2019200825-ABR-Alaska_POLST_Form.pdf"]]},
+
+{id:"symposium-current", title:"2026 EMS Symposium", url:"https://iremsc.org/current-year-conference/current-conference/", suggested:"Events",
+ description:"This year's conference promo page: dates (pre-conference Apr 1-2, conference Apr 3-4), venue (Westmark Hotel, Fairbanks), and registration/vendor-registration links via EventSquid. By nature this page goes stale every year and needs an annual refresh, not a permanent slot.",
+ ext:[["Conference registration (EventSquid)","https://www.eventsquid.com/event.cfm?id=30506"],["Vendor registration (EventSquid)","https://www.eventsquid.com/register/30506?profileName=Vendors"]],
+ files:[]},
+
+{id:"call-for-awards", title:"Call for Awards", url:"https://iremsc.org/call-for-awards/", suggested:"Events",
+ description:"Describes the 6 annual symposium award categories (Medical Director, Pre-Hospital Provider, EMS Service, Educator, Special Achievement, Lifetime Recognition) and how to nominate someone, with a downloadable nomination PDF and an embedded online nomination form.",
+ ext:[], files:[["IREMSC Award Nomination Form (2024 PDF - dated)","https://iremsc.org/wp-content/uploads/2024/01/2024-Awards-Application-typeable.pdf"]]},
+
+{id:"past-symposiums", title:"Previous EMS Symposium Winners", url:"https://iremsc.org/past-symposiums/", suggested:"Events",
+ description:"Award-winner archive by year, 2018-2024 (names, agencies, mostly placeholder/grey icon images rather than real photos). Heavy historical content - good candidate to trim to a short 'recent winners' list rather than carry the full archive forward.",
+ ext:[], files:[["2018 Lecture Handouts","https://iremsc.org/wp-content/uploads/2020/11/Slap-the-Cap-handout-2012_revised.pdf"]]},
+
+{id:"acems", title:"ACEMS", url:"https://iremsc.org/state-resources-2/acems/", suggested:"Events",
+ description:"Explains the statewide Alaska Council on EMS (ACEMS), its task force applications, and the 8 categories for the separate, state-level annual EMS awards (distinct from IREMSC's own awards) - nomination deadline Sept 30.",
+ ext:[["State ACEMS site","http://dhss.alaska.gov/dph/Emergency/Pages/acems/default.aspx"],["ACEMS Task Force Application (SurveyMonkey)","https://www.surveymonkey.com/r/ITFapp2020"],["ACEMS Award Nomination (SurveyMonkey, dated 2021 link text)","https://www.surveymonkey.com/r/EMSawards2021"]],
+ files:[]},
+
+{id:"jobs", title:"Jobs", url:"https://iremsc.org/jobs/", suggested:"Resources",
+ description:"Outbound job-board links for regional employers (Foundation Health Partners, LifeMed Alaska, Denali Universal Services, Fairbanks North Star Borough, City of Fairbanks, Guardian Flight). No IREMSC job listings of its own; an empty 'Time Sensitive Job Opportunities' header with nothing under it.",
+ ext:[["Foundation Health Partners careers","https://www.foundationhealth.org/fhp_careers"],["LifeMed Alaska jobs","https://recruiting.paylocity.com/Recruiting/Jobs/All/a9b97593-e9d7-43b9-8841-2a8e004f5979/LifeMed-Alaska"],["Denali Universal Services jobs","https://recruiting2.ultipro.com/DEN1005DENUS/JobBoard/86b2be56-ceea-4de4-931b-b6b6cdae1b75/"],["Fairbanks North Star Borough jobs","https://www.fnsb.gov/969/We-Are-Hiring"],["City of Fairbanks jobs","https://www.governmentjobs.com/careers/fairbanks"],["Guardian Flight jobs","https://careers.gmr.net/guardianflight/jobs"]],
+ files:[]},
+
+{id:"announcements", title:"Announcements", url:"https://iremsc.org/announcements-2/", suggested:"Cut / Remove",
+ description:"Old announcement archive: a 2024 standing-orders note, a placeholder 'click here' link that goes nowhere, a 2021-era Senate Bill press-release link, and 2021 vaccine-training instructions. Mostly stale/COVID-era content not maintained since.",
+ ext:[["Alaska EMS vaccine training portal","https://learn.dhss.alaska.gov/course/view.php?id=397"]], files:[]},
+
+{id:"meeting-minutes", title:"Meeting Minutes (unverified)", url:"https://iremsc.org/meeting-minutes/", suggested:"Undecided",
+ description:"Linked from the Board of Directors page as the home for board meeting minutes. This page returned an error during the crawl and its contents could not be inventoried - confirm with the client whether it still exists and what's on it.",
+ ext:[], files:[]},
+];
+
+// ---------- login / access checklist (client-side only, mailto - never saved) ----------
+const LOGIN_SERVICES = [
+  ["Enrollware", "https://www.enrollware.com/admin/login.aspx", "Course scheduling and registration"],
+  ["EventSquid", "https://www.eventsquid.com", "Symposium and conference registration"],
+  ["AHA Instructor Network (ATLAS)", "http://www.atlas.heart.org", "Instructor roster management"],
+  ["ShopCPR (AHA materials account)", "https://shopcpr.heart.org/", "Ordering AHA course materials"],
+  ["GovDelivery", "http://dhss.alaska.gov/dph/Emergency/Pages/newsletter.aspx", "EMS Vitals newsletter subscriber list"],
+  ["Google Forms / Workspace", "", "Mini-Grant and Ambulance Survey forms"],
+  ["SurveyMonkey", "https://www.surveymonkey.com", "ACEMS award nomination forms"],
+  ["YouTube", "https://www.youtube.com", "IREMSC channel"],
+  ["Facebook", "https://www.facebook.com", "Page admin"],
+  ["LinkedIn", "https://www.linkedin.com", "Page admin"],
+  ["Adobe Acrobat Sign", "https://acrobat.adobe.com", "Instructor transfer packets"],
+  ["Current website host / WordPress admin", "", "Needed to migrate content and set up redirects"],
+  ["Domain registrar / DNS", "", "Needed to point the domain at the new site"],
+  ["Office email (admin@, training@, director@)", "", "For verifying forms and contact addresses"],
+];
+
+function renderLoginGrid(){
+  const grid = document.getElementById("loginGrid");
+  grid.innerHTML = LOGIN_SERVICES.map((s,i)=>`
+    <label>
+      <input type="checkbox" id="svc-${i}" value="${escapeHtml(s[0])}|${escapeHtml(s[1])}">
+      <span>${escapeHtml(s[0])}<small>${escapeHtml(s[2])}</small></span>
+    </label>
+  `).join("");
+}
+
+function setLoginStatus(msg, ok){
+  const el = document.getElementById("loginStatus");
+  el.textContent = msg;
+  el.style.color = ok ? "var(--keep)" : "var(--cut)";
+}
+
+function wireLoginChecklist(){
+  renderLoginGrid();
+  document.getElementById("sendLoginsBtn").addEventListener("click", ()=>{
+    const email = document.getElementById("loginEmail").value.trim();
+    if(!email || !email.includes("@")){
+      setLoginStatus("Enter a valid email first.", false);
+      return;
+    }
+    const checked = Array.from(document.querySelectorAll('#loginGrid input[type=checkbox]:checked'))
+      .map(cb=>{
+        const [name,url] = cb.value.split("|");
+        return url ? "- " + name + " (" + url + ")" : "- " + name;
+      });
+    const customLines = document.getElementById("loginCustom").value
+      .split("\n").map(s=>s.trim()).filter(Boolean).map(s=>"- " + s);
+    const all = checked.concat(customLines);
+    if(all.length===0){
+      setLoginStatus("Check at least one service, or add your own, first.", false);
+      return;
+    }
+    const subject = "Logins needed - IREMSC site rebuild integration";
+    const body = "Services that need login or access handed to the web developer:\n\n"
+      + all.join("\n")
+      + "\n\n(Sent from the IREMSC content triage tool)";
+    window.location.href = "mailto:" + email + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+    setLoginStatus("Opening your email client...", true);
+  });
+}
+
+// ---------- information contributors ----------
+let contributors = [];
+
+async function loadContributors(){
+  try{
+    const res = await fetch("/api/contributors");
+    if(res.ok) contributors = await res.json();
+  }catch(e){
+    console.error("Could not load contributors", e);
+  }
+  renderContributors();
+}
+
+function renderContributors(){
+  const ul = document.getElementById("contribList");
+  ul.innerHTML = contributors.length
+    ? contributors.map((c,i)=>`
+        <li class="contrib-row">
+          <span class="contrib-name">${escapeHtml(c.name)}</span>
+          <span class="contrib-email">${escapeHtml(c.email)}</span>
+          <button class="contrib-remove" data-idx="${i}" title="Remove">&times;</button>
+        </li>`).join("")
+    : '<li class="contrib-empty">No contributors added yet - add the first one below.</li>';
+
+  ul.querySelectorAll(".contrib-remove").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const idx = parseInt(btn.dataset.idx, 10);
+      try{
+        const res = await fetch("/api/contributors", {
+          method: "DELETE",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({ index: idx })
+        });
+        if(res.ok) contributors = await res.json();
+      }catch(e){ console.error(e); }
+      renderContributors();
+      render(); // refresh decision-maker dropdowns across cards
+    });
+  });
+}
+
+function wireContributorForm(){
+  document.getElementById("contribAddBtn").addEventListener("click", async ()=>{
+    const nameEl = document.getElementById("contribName");
+    const emailEl = document.getElementById("contribEmail");
+    const name = nameEl.value.trim();
+    const email = emailEl.value.trim();
+    if(!name || !email || !email.includes("@")){
+      alert("Enter a name and a valid email.");
+      return;
+    }
+    try{
+      const res = await fetch("/api/contributors", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ name, email })
+      });
+      if(res.ok) contributors = await res.json();
+    }catch(e){ console.error(e); }
+    nameEl.value = "";
+    emailEl.value = "";
+    renderContributors();
+    render();
+  });
+}
+
+function decisionMakerOptionsHtml(rec){
+  return contributors.map((c,i)=>{
+    const selected = rec.decisionMaker && rec.decisionMaker.email === c.email ? "selected" : "";
+    return `<option value="${i}" ${selected}>${escapeHtml(c.name)} (${escapeHtml(c.email)})</option>`;
+  }).join("");
+}
+
+// ---------- runtime ----------
+// Backend: Cloudflare Pages Functions at /api/decisions, /api/contributors and
+// /api/upload, backed by a KV namespace (decisions + contributors) and an R2
+// bucket (uploaded files). See /functions.
+let state = {}; // id -> {status, parent, notes, decisionMaker, items, uploads}
+let saveQueue = Promise.resolve(); // serialize writes so rapid edits don't race
+let openDetails = new Set(); // tracks which <details> blocks are open across re-renders
+
+function statusClass(s){
+  const v = s && s.status;
+  return (v === "keep" || v === "cut") ? v : "undecided";
+}
+
+function statusLabel(status){
+  return status === "keep" ? "Keep" : status === "cut" ? "Cut" : "Undecided";
+}
+
+function buildParentOptions(select){
+  PARENTS.forEach(p=>{
+    const opt = document.createElement("option");
+    opt.value = p; opt.textContent = p;
+    select.appendChild(opt);
+  });
+}
+
+function getRec(id){
+  if(!state[id]) state[id] = {status:"undecided", parent:"", notes:"", decisionMaker:null, items:{}, uploads:{}};
+  if(!state[id].items) state[id].items = {};
+  if(!state[id].uploads) state[id].uploads = {};
+  if(state[id].decisionMaker === undefined) state[id].decisionMaker = null;
+  return state[id];
+}
+
+async function loadAll(){
+  try{
+    const res = await fetch("/api/decisions");
+    if(res.ok){
+      state = await res.json();
+    }
+  }catch(e){
+    console.error("Could not load saved decisions - starting blank.", e);
+  }
+  render();
+}
+
+async function saveOne(id){
+  const rec = getRec(id);
+  saveQueue = saveQueue.then(async ()=>{
+    try{
+      const res = await fetch("/api/decisions", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          id,
+          status: rec.status,
+          parent: rec.parent,
+          notes: rec.notes,
+          decisionMaker: rec.decisionMaker,
+          items: rec.items,
+          uploads: rec.uploads
+        })
+      });
+      if(!res.ok) throw new Error("save failed: "+res.status);
+    }catch(e){
+      console.error("Save failed for", id, e);
+      flashError(id);
+    }
+  });
+  return saveQueue;
+}
+
+async function uploadFile(file, pageId, key, label){
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("pageId", pageId);
+  if(key) fd.append("key", key);
+  if(label) fd.append("label", label);
+  const res = await fetch("/api/upload", { method:"POST", body: fd });
+  if(!res.ok) throw new Error("upload failed: "+res.status);
+  return res.json();
+}
+
+function flashError(id){
+  const tick = document.getElementById("tick-"+id);
+  if(!tick) return;
+  tick.textContent = "save failed - retry";
+  tick.style.color = "var(--cut)";
+  tick.classList.add("show");
+}
+
+function flashSaved(id){
+  const tick = document.getElementById("tick-"+id);
+  if(!tick) return;
+  tick.textContent = "saved";
+  tick.style.color = "var(--keep)";
+  tick.classList.add("show");
+  setTimeout(()=>tick.classList.remove("show"), 1200);
+}
+
+// Light polling so teammates editing at the same time stay roughly in sync.
+setInterval(async ()=>{
+  try{
+    const res = await fetch("/api/decisions");
+    if(res.ok){
+      const fresh = await res.json();
+      const active = document.activeElement;
+      const activeId = active && active.dataset ? active.dataset.id : null;
+      Object.keys(fresh).forEach(id=>{
+        if(id !== activeId) state[id] = fresh[id];
+      });
+      render();
+    }
+  }catch(e){ /* ignore transient errors */ }
+  try{
+    const res2 = await fetch("/api/contributors");
+    if(res2.ok){
+      const fresh2 = await res2.json();
+      if(JSON.stringify(fresh2) !== JSON.stringify(contributors)){
+        contributors = fresh2;
+        renderContributors();
+        render();
+      }
+    }
+  }catch(e){ /* ignore transient errors */ }
+}, 15000);
+
+function escapeHtml(s){
+  return (s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function renderItemList(pageId, label, items, kind, rec, detailsKey){
+  if(!items || !items.length) return "";
+  const itemsHtml = items.map(([t,u], idx)=>{
+    const key = kind+"-"+idx;
+    const itemStatus = (rec.items && rec.items[key]) || "undecided";
+    const upload = rec.uploads && rec.uploads[key];
+    const replaceControl = kind==="file" ? (
+      '<label class="upload-btn">' + (upload ? "Replace again" : "Replace") +
+      '<input type="file" class="replace-input" data-page="'+pageId+'" data-key="'+key+'" hidden></label>'
+    ) : "";
+    let row = '<li class="item-row">'
+      + '<a href="'+u+'" target="_blank" rel="noopener" class="'+(itemStatus==='cut'?'is-cut':'')+'">'+escapeHtml(t)+'</a>'
+      + '<span class="item-controls">'
+      + '<span class="mini-seg" data-page="'+pageId+'" data-key="'+key+'">'
+      + '<button data-status="cut" class="'+(itemStatus==='cut'?'on cut':'')+'" title="Cut">C</button>'
+      + '<button data-status="keep" class="'+(itemStatus==='keep'?'on keep':'')+'" title="Keep">K</button>'
+      + '</span>'
+      + replaceControl
+      + '</span></li>';
+    if(upload){
+      row += '<li class="upload-note">Replacement uploaded: <a href="'+upload.url+'" target="_blank" rel="noopener">'+escapeHtml(upload.name)+'</a></li>';
+    }
+    return row;
+  }).join("");
+  const openAttr = openDetails.has(detailsKey) ? "open" : "";
+  return '<details class="linklist" data-key="'+detailsKey+'" '+openAttr+'><summary>'+label+' ('+items.length+')</summary><ul>'+itemsHtml+'</ul></details>';
+}
+
+function renderUploadsSection(pageId, rec, detailsKey){
+  const list = (rec.uploads && rec.uploads.standalone) || [];
+  const itemsHtml = list.map((u, idx)=>{
+    const key = "standalone-"+idx;
+    const st = (rec.items && rec.items[key]) || "undecided";
+    return '<li class="item-row">'
+      + '<a href="'+u.url+'" target="_blank" rel="noopener" class="'+(st==='cut'?'is-cut':'')+'">'+escapeHtml(u.name)+'</a>'
+      + '<span class="item-controls"><span class="mini-seg" data-page="'+pageId+'" data-key="'+key+'">'
+      + '<button data-status="cut" class="'+(st==='cut'?'on cut':'')+'" title="Cut">C</button>'
+      + '<button data-status="keep" class="'+(st==='keep'?'on keep':'')+'" title="Keep">K</button>'
+      + '</span></span></li>';
+  }).join("");
+  const openAttr = openDetails.has(detailsKey) ? "open" : "";
+  return '<details class="linklist" data-key="'+detailsKey+'" '+openAttr+'>'
+    + '<summary>New uploads ('+list.length+')</summary>'
+    + '<ul>'+(itemsHtml || '<li class="upload-note">No new files added yet.</li>')+'</ul>'
+    + '<div class="add-upload-row">'
+    + '<input type="text" class="upload-label" placeholder="Label this file...">'
+    + '<label class="upload-btn">Choose file to add<input type="file" class="standalone-input" data-page="'+pageId+'" hidden></label>'
+    + '</div></details>';
+}
+
+let activeStatusFilter = "";
+let activeParentFilter = "";
+let activeSearch = "";
+
+function matchesFilters(p){
+  const rec = getRec(p.id);
+  if(activeStatusFilter && statusClass(rec) !== activeStatusFilter) return false;
+  if(activeParentFilter){
+    const dest = rec.parent || p.suggested;
+    if(dest !== activeParentFilter) return false;
+  }
+  if(activeSearch){
+    const hay = [p.title,p.url,p.description,
+      ...(p.ext||[]).flat(), ...(p.files||[]).flat()
+    ].join(" ").toLowerCase();
+    if(!hay.includes(activeSearch.toLowerCase())) return false;
+  }
+  return true;
+}
+
+function renderSummary(){
+  const counts = {keep:0, cut:0, undecided:0, total:PAGES.length};
+  PAGES.forEach(p=>{
+    const s = statusClass(getRec(p.id));
+    counts[s] = (counts[s]||0)+1;
+  });
+  const cells = [
+    ["total","All pages",counts.total],
+    ["cut","Cut",counts.cut],
+    ["keep","Keep",counts.keep],
+    ["undecided","Undecided",counts.undecided],
+  ];
+  const el = document.getElementById("summary");
+  el.innerHTML = cells.map(([key,label,n])=>`
+    <div class="cell ${activeStatusFilter===key?'active':''}" data-key="${key}">
+      <span class="n">${n}</span><span class="lbl">${label}</span>
+    </div>`).join("");
+  el.querySelectorAll(".cell").forEach(c=>{
+    c.addEventListener("click", ()=>{
+      const k = c.dataset.key;
+      activeStatusFilter = (k==="total") ? "" : (activeStatusFilter===k ? "" : k);
+      document.getElementById("statusFilter").value = activeStatusFilter;
+      render();
+    });
+  });
+}
+
+function cardHtml(p){
+  const rec = getRec(p.id);
+  const status = statusClass(rec);
+  const dest = rec.parent || "";
+  const cardKey = "card:"+p.id;
+  const extKey = "ext:"+p.id;
+  const fileKey = "file:"+p.id;
+  const upKey = "uploads:"+p.id;
+
+  const extHtml = renderItemList(p.id, "External links", p.ext, "ext", rec, extKey);
+  const fileHtml = renderItemList(p.id, "File resources", p.files, "file", rec, fileKey);
+  const internalHtml = p.links_internal ? renderItemList(p.id, "Internal links (verify)", p.links_internal, "int", rec, "int:"+p.id) : "";
+  const uploadsHtml = renderUploadsSection(p.id, rec, upKey);
+  const dmOptions = decisionMakerOptionsHtml(rec);
+  const cardOpenAttr = openDetails.has(cardKey) ? "open" : "";
+
+  return `
+  <div class="card" data-id="${p.id}">
+    <div class="tab status-${status}"></div>
+    <details class="card-details" data-key="${cardKey}" ${cardOpenAttr}>
+      <summary class="card-summary">
+        <div class="summary-title-row">
+          <span class="title-left">
+            <span class="arrow">&#9656;</span>
+            <span class="card-title">${escapeHtml(p.title)}</span>
+          </span>
+          <span class="status-badge ${status}">${statusLabel(status)}</span>
+        </div>
+        <div class="card-url"><a href="${p.url}" target="_blank" rel="noopener">${p.url}</a></div>
+        <div class="decision-maker-row">
+          <label>Decision maker</label>
+          <select class="decisionmaker" data-id="${p.id}">
+            <option value="">Unassigned</option>
+            ${dmOptions}
+          </select>
+        </div>
+      </summary>
+      <div class="card-rest">
+        <div class="card-desc">${escapeHtml(p.description)}</div>
+        <div class="meta-row">
+          <span>Current suggestion: <strong>${escapeHtml(p.suggested)}</strong></span>
+          <span>${(p.ext||[]).length} external link${(p.ext||[]).length===1?"":"s"}</span>
+          <span>${(p.files||[]).length} file resource${(p.files||[]).length===1?"":"s"}</span>
+        </div>
+        ${extHtml}
+        ${fileHtml}
+        ${internalHtml}
+        ${uploadsHtml}
+
+        <div class="decision-row">
+          <div class="decision-row-top">
+            <div class="seg" data-id="${p.id}">
+              <button data-status="cut" class="${status==='cut'?'on cut':''}">Cut</button>
+              <button data-status="keep" class="${status==='keep'?'on keep':''}">Keep</button>
+            </div>
+            <div class="dest-block">
+              <select class="parentpick" data-id="${p.id}">
+                <option value="">Destination...</option>
+                ${PARENTS.map(par=>`<option value="${par}" ${dest===par?'selected':''}>${par}</option>`).join("")}
+              </select>
+              <span class="dest-caption">Optional, your web designer will sort pages based on SEO logic</span>
+            </div>
+          </div>
+          <div class="notes-block">
+            <span class="notes-label">Notes</span>
+            <textarea class="notes" rows="3" data-id="${p.id}">${escapeHtml(rec.notes||'')}</textarea>
+          </div>
+          <span class="saved-tick" id="tick-${p.id}">saved</span>
+        </div>
+      </div>
+    </details>
+  </div>`;
+}
+
+function render(){
+  renderSummary();
+  const groups = {};
+  PARENTS.forEach(p=>groups[p]=[]);
+  const visible = PAGES.filter(matchesFilters);
+  visible.forEach(p=>{
+    const rec = getRec(p.id);
+    const dest = rec.parent || p.suggested;
+    if(!groups[dest]) groups[dest] = [];
+    groups[dest].push(p);
+  });
+
+  const el = document.getElementById("listings");
+  if(visible.length===0){
+    el.innerHTML = `<div class="empty">No pages match the current filters.</div>`;
+    return;
+  }
+  let html = "";
+  PARENTS.forEach(parent=>{
+    const items = groups[parent];
+    if(!items || !items.length) return;
+    html += `<div class="group-head"><h2>${escapeHtml(parent)}</h2><span class="count">${items.length} page${items.length===1?"":"s"}</span><hr></div>`;
+    items.forEach(p=> html += cardHtml(p));
+  });
+  el.innerHTML = html;
+  attachCardEvents();
+}
+
+function attachCardEvents(){
+  // track open/closed state on every collapsible block so re-renders don't snap them shut
+  document.querySelectorAll("details[data-key]").forEach(det=>{
+    det.addEventListener("toggle", ()=>{
+      if(det.open) openDetails.add(det.dataset.key);
+      else openDetails.delete(det.dataset.key);
+    });
+  });
+
+  document.querySelectorAll(".seg button").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const id = btn.parentElement.dataset.id;
+      const rec = getRec(id);
+      rec.status = btn.dataset.status;
+      await saveOne(id);
+      render();
+      flashSaved(id);
+    });
+  });
+
+  document.querySelectorAll("select.parentpick").forEach(sel=>{
+    sel.addEventListener("change", async ()=>{
+      const id = sel.dataset.id;
+      const rec = getRec(id);
+      rec.parent = sel.value;
+      await saveOne(id);
+      render();
+      flashSaved(id);
+    });
+  });
+
+  document.querySelectorAll("select.decisionmaker").forEach(sel=>{
+    sel.addEventListener("change", async ()=>{
+      const id = sel.dataset.id;
+      const rec = getRec(id);
+      const idx = sel.value;
+      rec.decisionMaker = idx === "" ? null : (contributors[parseInt(idx,10)] || null);
+      await saveOne(id);
+      flashSaved(id);
+    });
+  });
+
+  document.querySelectorAll("textarea.notes").forEach(area=>{
+    let t;
+    area.addEventListener("input", ()=>{
+      clearTimeout(t);
+      t = setTimeout(async ()=>{
+        const id = area.dataset.id;
+        const rec = getRec(id);
+        rec.notes = area.value;
+        await saveOne(id);
+        flashSaved(id);
+      }, 500);
+    });
+  });
+
+  document.querySelectorAll(".mini-seg button").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const seg = btn.closest(".mini-seg");
+      const pageId = seg.dataset.page, key = seg.dataset.key;
+      const rec = getRec(pageId);
+      rec.items[key] = btn.dataset.status;
+      await saveOne(pageId);
+      render();
+      flashSaved(pageId);
+    });
+  });
+
+  document.querySelectorAll(".replace-input").forEach(inp=>{
+    inp.addEventListener("change", async ()=>{
+      const file = inp.files[0]; if(!file) return;
+      const pageId = inp.dataset.page, key = inp.dataset.key;
+      try{
+        const result = await uploadFile(file, pageId, key, file.name);
+        const rec = getRec(pageId);
+        rec.uploads[key] = {name: result.name || file.name, url: result.url, uploadedAt: Date.now()};
+        await saveOne(pageId);
+        render();
+        flashSaved(pageId);
+      }catch(e){
+        console.error(e);
+        alert("Upload failed - please try again.");
+      }
+    });
+  });
+
+  document.querySelectorAll(".standalone-input").forEach(inp=>{
+    inp.addEventListener("change", async ()=>{
+      const file = inp.files[0]; if(!file) return;
+      const pageId = inp.dataset.page;
+      const labelInput = inp.closest(".add-upload-row").querySelector(".upload-label");
+      const label = (labelInput && labelInput.value.trim()) || file.name;
+      try{
+        const result = await uploadFile(file, pageId, "", label);
+        const rec = getRec(pageId);
+        if(!rec.uploads.standalone) rec.uploads.standalone = [];
+        rec.uploads.standalone.push({name:label, url:result.url, uploadedAt:Date.now()});
+        if(labelInput) labelInput.value = "";
+        await saveOne(pageId);
+        render();
+        flashSaved(pageId);
+      }catch(e){
+        console.error(e);
+        alert("Upload failed - please try again.");
+      }
+    });
+  });
+}
+
+document.getElementById("search").addEventListener("input", e=>{
+  activeSearch = e.target.value;
+  render();
+});
+document.getElementById("statusFilter").addEventListener("change", e=>{
+  activeStatusFilter = e.target.value;
+  render();
+});
+const parentFilterSel = document.getElementById("parentFilter");
+buildParentOptions(parentFilterSel);
+parentFilterSel.addEventListener("change", e=>{
+  activeParentFilter = e.target.value;
+  render();
+});
+
+document.getElementById("exportBtn").addEventListener("click", ()=>{
+  const out = PAGES.map(p=>{
+    const rec = getRec(p.id);
+    return {
+      title:p.title, url:p.url,
+      status: statusClass(rec),
+      destination: rec.parent || p.suggested,
+      decisionMaker: rec.decisionMaker || null,
+      notes: rec.notes||"",
+      itemDecisions: rec.items||{},
+      uploads: rec.uploads||{}
+    };
+  });
+  const blob = new Blob([JSON.stringify(out,null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "iremsc-content-decisions.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+});
+
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  activeSearch=""; activeStatusFilter=""; activeParentFilter="";
+  document.getElementById("search").value="";
+  document.getElementById("statusFilter").value="";
+  document.getElementById("parentFilter").value="";
+  render();
+});
+
+wireLoginChecklist();
+wireContributorForm();
+loadContributors().then(loadAll);
+</script>
+</body>
+</html>
