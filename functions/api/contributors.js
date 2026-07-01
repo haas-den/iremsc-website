@@ -4,7 +4,7 @@
 // its own key so it never collides with "decision:<pageId>" records.
 //
 // Data model: one KV key, "contributors:list" -> JSON array of
-//   { name, email, addedAt }
+//   { name, position, email, addedAt }
 
 const KEY = "contributors:list";
 
@@ -38,6 +38,7 @@ export async function onRequestPost(context) {
   }
 
   const name = String((body && body.name) || "").trim().slice(0, 120);
+  const position = String((body && body.position) || "").trim().slice(0, 120);
   const email = String((body && body.email) || "").trim().slice(0, 200);
   if (!name || !email || !email.includes("@")) {
     return jsonResponse({ error: "A valid name and email are required" }, 400);
@@ -49,7 +50,7 @@ export async function onRequestPost(context) {
   // avoid piling up exact duplicates if someone double-clicks "Add"
   const alreadyExists = list.some((c) => c.email.toLowerCase() === email.toLowerCase());
   if (!alreadyExists) {
-    list.push({ name, email, addedAt: Date.now() });
+    list.push({ name, position, email, addedAt: Date.now() });
     await env.DECISIONS.put(KEY, JSON.stringify(list));
   }
 
