@@ -1,17 +1,23 @@
 // Cloudflare Pages Function - handles GET/POST for /api/decisions
 //
 // Requires a KV namespace bound to this Pages project as `DECISIONS`.
-// (Pages dashboard -> your project -> Settings -> Bindings -> Add -> KV namespace)
+// (Pages dashboard -> your project -> Settings -> Functions -> KV namespace bindings)
 //
 // Data model: one KV key per reviewed page, "decision:<pageId>" ->
 //   JSON.stringify({
 //     status: "keep" | "cut" | "undecided",
 //     parent, notes, updatedAt,
-//     decisionMaker: { name, email } | null,
+//     decisionMaker: { name, position, email } | null,
 //     items: { "ext-0": "keep"|"cut", "file-3": "cut", "standalone-0": "keep", ... },
 //     uploads: {
 //       "file-3": { name, url, uploadedAt },          // replacement for an existing file
 //       standalone: [ { name, url, uploadedAt }, ... ] // brand new files added on their own
+//     },
+//     meta: {
+//       // freeform per-item extras. Currently used by the logins & access
+//       // checklist (synthetic page id "_login_checklist") to track whether
+//       // a service needs the developer invited as a user, and/or 2FA:
+//       "login-3": { invited: true, twofa: false }, ...
 //     }
 //   })
 //
@@ -71,7 +77,7 @@ export async function onRequestPost(context) {
     return jsonResponse({ error: "Invalid JSON body" }, 400);
   }
 
-  const { id, status, parent, notes, decisionMaker, items, uploads } = body || {};
+  const { id, status, parent, notes, decisionMaker, items, uploads, meta } = body || {};
   if (!id || typeof id !== "string") {
     return jsonResponse({ error: "Missing or invalid 'id'" }, 400);
   }
@@ -82,6 +88,7 @@ export async function onRequestPost(context) {
   if (decisionMaker && typeof decisionMaker === "object" && decisionMaker.email) {
     safeDecisionMaker = {
       name: String(decisionMaker.name || "").slice(0, 120),
+      position: String(decisionMaker.position || "").slice(0, 120),
       email: String(decisionMaker.email || "").slice(0, 200),
     };
   }
@@ -93,6 +100,7 @@ export async function onRequestPost(context) {
     decisionMaker: safeDecisionMaker,
     items: items && typeof items === "object" ? items : {},
     uploads: uploads && typeof uploads === "object" ? uploads : {},
+    meta: meta && typeof meta === "object" ? meta : {},
     updatedAt: Date.now(),
   };
 
