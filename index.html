@@ -314,7 +314,7 @@
   <div class="masthead">
     <p class="eyebrow">IREMSC.ORG - SITE REBUILD / CONTENT INVENTORY</p>
     <h1>Content Triage Worksheet</h1>
-    <p>Every page on the current site, what's actually on it, and where it could live in the new 6-page structure (Contact - About - Events - Classes - Resources - News). Mark each page Cut or Keep, pick a destination, and leave a note. Everyone on the team sees the same board - changes save automatically.</p>
+    <p>Every page on the current site, what's actually on it, and where it could live in the new 6-page structure (About - Classes - Rentals | Supplies - Grants | Resources - Events - News). Mark each page Cut or Keep, pick a destination, and leave a note. Everyone on the team sees the same board - changes save automatically.</p>
   </div>
 
   <details class="login-section" id="contributorsSection">
@@ -390,7 +390,7 @@
 </div>
 
 <script>
-const PARENTS = ["Contact","About","Events","Classes","Resources","News","Cut / Remove","Undecided"];
+const PARENTS = ["About","Classes","Rentals | Supplies","Grants | Resources","Events","News","Cut / Remove","Undecided"];
 
 const PAGES = [
 {id:"home", title:"Home", url:"https://iremsc.org/", suggested:"About",
@@ -416,7 +416,7 @@ const PAGES = [
  ext:[["Chena Goldstream Fire & Rescue","http://www.cgfr.com/"],["Ester Volunteer Fire Dept.","http://esterfire.org/"],["Fairbanks Fire Dept","https://www.fairbanksalaska.us/fire"],["North Star Volunteer Fire Dept.","http://www.northstarfire.org/"],["North Pole Fire Dept.","https://www.northpolealaska.com/departments/fire/index.php"],["Steese Area Volunteer Fire Dept.","http://www.steesefire.org/"],["Tanana Chiefs Conference","http://www.tananachiefs.org/"],["Tri-Valley Fire Department","http://www.trivalleyfire.org/"],["University of Alaska Fire Dept.","http://www.uaf.edu/fire"]],
  files:[]},
 
-{id:"regional-offices", title:"Regional Offices", url:"https://iremsc.org/grants-and-resources/regional-offices/", suggested:"Resources",
+{id:"regional-offices", title:"Regional Offices", url:"https://iremsc.org/grants-and-resources/regional-offices/", suggested:"Grants | Resources",
  description:"Statewide table of the 7 Alaska EMS regional council offices (contact name, address, phone, email) plus a regions map image. Reference/contact data, not specific to IREMSC itself.",
  ext:[], files:[]},
 
@@ -457,55 +457,55 @@ const PAGES = [
  description:"How to become an AHA instructor (ACLS/BLS/Heartsaver/PALS): prerequisite provider card, required AHA online Instructor Essentials course, then the IREMSC in-person instructor course. Pricing for both online and in-person components.",
  ext:[["elearning.heart.org","http://www.onlineaha.org/"]], files:[]},
 
-{id:"equipment-rentals", title:"Equipment Rentals", url:"https://iremsc.org/supplies/equipment-rentals/", suggested:"Resources",
+{id:"equipment-rentals", title:"Equipment Rentals", url:"https://iremsc.org/supplies/equipment-rentals/", suggested:"Rentals | Supplies",
  description:"Explains the rental process and policies (booking lead time, expediting fee, shipping, late fees, liability - very long policy text), with an embedded online rental order form (name/address/items/dates) that would need rebuilding as a real form, not static content.",
  ext:[], files:[["EMT Class Equipment Request","https://iremsc.org/wp-content/uploads/2020/11/EMT_ClassEquipmentRequest_16.08.25Typeable.pdf"],["ETT Class Equipment Request","https://iremsc.org/wp-content/uploads/2020/11/ETT_ClassEquipmentRequestTypeable_16.09.08.pdf"],["CPR Equipment Request (v1)","https://iremsc.org/wp-content/uploads/2020/11/CPR_ClassEquipmentRequest_16.08.25.pdf"],["CPR Equipment Request (current)","https://iremsc.org/wp-content/uploads/2024/08/IREMSC-CPR-Class-Equipment-Request-2024.08.02.pdf"],["Supply & Rental Catalog","https://iremsc.org/wp-content/uploads/2025/09/Supply-Rental-Catalog-rev-25.09.09-Formatting-and-addtl-items-approved-by-BOD-25.6.11.pdf"]]},
 
-{id:"supplies", title:"Supplies", url:"https://iremsc.org/supplies/", suggested:"Resources",
+{id:"supplies", title:"Supplies", url:"https://iremsc.org/supplies/", suggested:"Rentals | Supplies",
  description:"One paragraph: IREMSC resells individual ambulance supplies normally bought in bulk. Points to the same Supply & Rental Catalog PDF used on the Equipment Rentals page.",
  ext:[], files:[["Supply & Rental Catalog (duplicate link)","https://iremsc.org/wp-content/uploads/2025/09/Supply-Rental-Catalog-rev-25.09.09-Formatting-and-addtl-items-approved-by-BOD-25.6.11.pdf"]]},
 
-{id:"classroom-rentals", title:"Classroom Rentals", url:"https://iremsc.org/supplies/classroom-rentals/", suggested:"Resources",
+{id:"classroom-rentals", title:"Classroom Rentals", url:"https://iremsc.org/supplies/classroom-rentals/", suggested:"Rentals | Supplies",
  description:"30-person classroom rental rates (day/evening/full-day), usage rules, and booking lead-time requirements, with an embedded rental request form (name, dates, rental type, comments).",
  ext:[], files:[]},
 
-{id:"grants-resources-main", title:"Grants and Resources (hub)", url:"https://iremsc.org/grants-and-resources/", suggested:"Resources",
+{id:"grants-resources-main", title:"Grants and Resources (hub)", url:"https://iremsc.org/grants-and-resources/", suggested:"Grants | Resources",
  description:"'Agency Resources' hub: business forms (credit application, credit card auth, ACH), EMS agency forms (ambulance survey, sample medical director agreement), and operational documents (FNSB standing orders, medical director handbook). Mostly a flat list of PDF links with little framing text - a strong candidate to fold into a broader Resources page.",
  ext:[], files:[["IREMSC Credit Application","https://iremsc.org/wp-content/uploads/2020/11/IREMSC_Business_Forms_updated15.11.05-typeable.pdf"],["Credit Card Authorization Form","https://iremsc.org/wp-content/uploads/2020/11/CreditCardAuthorizationFormTypeable-rev-20.06.18.pdf"],["IREMSC ACH Form","https://iremsc.org/wp-content/uploads/2020/11/IREMSC-ACH-AUTH-FORMTypeable-2020.pdf"],["Ambulance Survey","https://iremsc.org/wp-content/uploads/2020/11/2019IREMSCAmbulanceSurvey20.05.18-typeable.pdf"],["Sample Medical Director Agreement Letter","https://iremsc.org/wp-content/uploads/2020/11/SampleEMSAgencyMedicalDirectorAgreement.pdf"],["FNSB Standing Orders (2022 copy)","https://iremsc.org/wp-content/uploads/2022/03/2022-Standing-Orders-Q1-1.pdf"],["Medical Directors Handbook","https://iremsc.org/wp-content/uploads/2020/11/EMSMedicalDirectorHandbook.pdf"]]},
 
-{id:"aurora", title:"AURORA Data Collection", url:"https://iremsc.org/grants-and-resources/aurora-data-collection/", suggested:"Resources",
+{id:"aurora", title:"AURORA Data Collection", url:"https://iremsc.org/grants-and-resources/aurora-data-collection/", suggested:"Grants | Resources",
  description:"Explains the state-sponsored AURORA ePCR program and its relationship to NEMSIS (the national EMS data standard); notes certified ambulance services must use AURORA-Elite.",
  ext:[], files:[]},
 
-{id:"code-blue", title:"Code Blue Projects", url:"https://iremsc.org/grants-and-resources/regional-offices/code-blue-projects/", suggested:"Resources",
+{id:"code-blue", title:"Code Blue Projects", url:"https://iremsc.org/grants-and-resources/regional-offices/code-blue-projects/", suggested:"Grants | Resources",
  description:"History and mechanics of the statewide Code Blue equipment grant program, what it funds (ambulances, snowmachines, ATVs, monitors, radios - equipment only, not training/expendables), and how/when Interior Region agencies apply (fall application, mid-January deadline).",
  ext:[], files:[["FY27 Application Packet","https://iremsc.org/wp-content/uploads/2026/02/FY27_Application_Packet.pdf"],["Code Blue Brochure","https://iremsc.org/wp-content/uploads/2025/02/IREMSC-Code-Blue-Brochure.pdf"],["Code Blue Policy Manual","https://iremsc.org/wp-content/uploads/2026/02/2_25.12.17-Code-Blue-Manual.pdf"],["Equipment Transfer / Lost / Stolen Item Form","https://iremsc.org/wp-content/uploads/2020/11/TransferLostUnservicableorStolenItemReport_REV2020.pdf"]]},
 
-{id:"mini-grants", title:"Mini-Grants", url:"https://iremsc.org/grants-and-resources/regional-offices/mini-grants/", suggested:"Resources",
+{id:"mini-grants", title:"Mini-Grants", url:"https://iremsc.org/grants-and-resources/regional-offices/mini-grants/", suggested:"Grants | Resources",
  description:"Explains operational mini-grants for rural, volunteer-reliant EMS services (training, equipment, insurance, fuel); not open to publicly-funded municipal/borough systems. Includes startup-grant application steps and a note that the 2026 cycle opens after July 1, 2026.",
  ext:[["Startup Mini-Grant Application (Google Form)","https://docs.google.com/forms/d/e/1FAIpQLSe-4ktJkOtGyKCLLoNeux5tkYgNnEVtaZbvV7e9cHN6LBk1Og/viewform"],["Ambulance Survey (Google Form)","https://forms.gle/k9og9LTGTJ1mKnHWA"]],
  files:[["Mini-Grant Policy","https://iremsc.org/wp-content/uploads/2025/11/Reference-A-Mini-Grant-Policy-IREMSC-25.11.25.pdf"],["Mini-Grant Purchasing Policy","https://iremsc.org/wp-content/uploads/2025/01/Reference-B-Mini-Grant-Purchasing-Policy-Appendix-B.pdf"],["Mini-Grant Equipment Checklist","https://iremsc.org/wp-content/uploads/2025/01/3-Mini-Grant-Equipment-List-Appendix-C-Fillable.pdf"],["Ambulance Survey (fillable PDF)","https://iremsc.org/wp-content/uploads/2025/09/2025.09.05-EMS-Survey-FINAL.pdf"],["Mini-Grant Expense Report Form","https://iremsc.org/wp-content/uploads/2025/11/Mini-Grant-Expense-From-FY26_typeable.pdf"]]},
 
-{id:"misc-grants", title:"Misc Grants", url:"https://iremsc.org/grants-and-resources/regional-offices/misc-grants/", suggested:"Resources",
+{id:"misc-grants", title:"Misc Grants", url:"https://iremsc.org/grants-and-resources/regional-offices/misc-grants/", suggested:"Grants | Resources",
  description:"Short list of outside grant-making organizations relevant to EMS services. No IREMSC-specific content.",
  ext:[["Rasmuson Foundation","https://www.rasmuson.org/"],["USDA Rural Development Grants","https://www.rd.usda.gov/programs-services/all-programs"],["Denali Commission","https://www.denali.gov/programs/"],["EMS1 EMS Grants","https://www.ems1.com/ems-grants/"],["Firehouse Subs Public Safety Foundation Grants","http://grants.firehousesubs.com/"]],
  files:[]},
 
-{id:"general-public-info", title:"General Public Info", url:"https://iremsc.org/grants-and-resources/general-public-info/", suggested:"Resources",
+{id:"general-public-info", title:"General Public Info", url:"https://iremsc.org/grants-and-resources/general-public-info/", suggested:"Grants | Resources",
  description:"A grab-bag of public-facing links: Safe Surrender of Infants FAQ, poison control, CDC, NHTSA, OSHA, university EMS programs, rural health resource hubs, and a citation to a 2021 academic paper on ambulance equipment standards.",
  ext:[["Alaska Poison Control System","http://www.dhss.alaska.gov/dph/Chronic/Pages/InjuryPrevention/Poison/Default.aspx"],["National Poison Prevention Center","https://aapcc.org/Prevention/nppw"],["CDC","https://www.cdc.gov/"],["NHTSA","https://www.nhtsa.gov/"],["OSHA","http://www.osha.gov/"],["UAF Paramedicine Program","https://www.ctc.uaf.edu/programs/paramedicine/"],["UMBC Emergency Health Services Dept.","http://ehs.umbc.edu/"],["National Rural Health Resource Center","https://www.ruralcenter.org/"],["Rural Health Information Hub - EMS","https://www.ruralhealthinfo.org/topics/emergency-medical-services"],["Recommended Essential Equipment for Ambulances 2020 (journal article)","https://www.tandfonline.com/doi/full/10.1080/10903127.2021.1886382"],["George Washington Univ. EHS Program (link dead/redirects)","http://www.gwumc.edu/"]],
  files:[["Safe Surrender of Infants Act FAQ","https://iremsc.org/wp-content/uploads/2020/11/SafeSurrenderofInfantsActGuidance.pdf"],["Help Along the Way Pamphlet","https://iremsc.org/wp-content/uploads/2020/11/HelpAlongHighwayPamphlet.pdf"],["EMSC Education and Training (2013)","https://iremsc.org/wp-content/uploads/2020/11/EMSC-Education-and-Training-1-2013.pdf"]]},
 
-{id:"regional-resources", title:"Regional Resources", url:"https://iremsc.org/grants-and-resources/regional-resources/", suggested:"Resources",
+{id:"regional-resources", title:"Regional Resources", url:"https://iremsc.org/grants-and-resources/regional-resources/", suggested:"Grants | Resources",
  description:"Archive of FNSB regional Standing Orders by year (2019-2024) for agencies/medical directors to use as drafting examples, plus national NHTSA Scope of Practice model documents. Several outdated copies kept alongside the current one.",
  ext:[], files:[["FNSB Standing Orders - 2024","https://iremsc.org/wp-content/uploads/2024/02/2024-FNSB-Standing-Orders.pdf"],["Regional Standing Orders - 2022","https://iremsc.org/wp-content/uploads/2022/03/2022-Standing-Orders-Q1-1.pdf"],["Regional Standing Orders - 2021","https://iremsc.org/wp-content/uploads/2021/03/21.03.17-FNSB-Standing-orders.pdf"],["Regional Standing Orders - 2019","https://iremsc.org/wp-content/uploads/2021/03/FNSB_SO_REVISED_06.2019.pdf"],["NHTSA National Scope of Practice Model 2019","https://iremsc.org/wp-content/uploads/2021/03/National_EMS_Scope_of_Practice_Model_2019.pdf"],["NHTSA 2019 SOP Model Change Notices 1&2","https://iremsc.org/wp-content/uploads/2021/03/NHTSA.2019SOPM.ChangeNotices.One_.and_.Two_.032921-1.pdf"]]},
 
-{id:"state-ems", title:"State Office of EMS", url:"https://iremsc.org/state-resources-2/state-ems/", suggested:"Resources",
+{id:"state-ems", title:"State Office of EMS", url:"https://iremsc.org/state-resources-2/state-ems/", suggested:"Grants | Resources",
  description:"Overview of the State Office of EMS, plus a stack of COVID-era certification/course bulletins from 2020-2021 (extensions, recertification modifications, reinstatement, interim policy on courses/exams) that are now obsolete, alongside still-relevant links to the state EMS site, certification portal, and Newsletter.",
  ext:[["State of Alaska EMS website","http://dhss.alaska.gov/dph/Emergency/Pages/ems/default.aspx"],["EMS Certification (apply/check status)","http://dhss.alaska.gov/dph/Emergency/Pages/ems/certification.aspx"],["EMS Vitals Newsletter (signup/archive)","http://dhss.alaska.gov/dph/Emergency/Pages/Newsletter.aspx"],["Alaska EMS Administrative Code","http://www.legis.state.ak.us/basis/aac.asp#7.26"]],
  files:[["TXA in Head Injured Patients (Trauma System Review)","https://iremsc.org/wp-content/uploads/2021/04/2021_TXA_prehospital_TSRC.pdf"],["4/10/2020 Certification Extension Notice","https://iremsc.org/wp-content/uploads/2020/11/SOA-EMS-2020.04.10-ExtensionMay312021.pdf"],["5/1/2020 Recertification Modifications","https://iremsc.org/wp-content/uploads/2020/11/SOAEMS_2020.05.01_RecertificationModifications.pdf"],["5/19/2020 Emergency Reinstatement of Lapsed Certs","https://iremsc.org/wp-content/uploads/2020/11/SOA-EMS-2020.05.19-Certification-Reinstatement-2.edited.pdf"],["4/21/2021 EMT-1 Transition Memo","https://iremsc.org/wp-content/uploads/2021/04/SOA_EMS_2021.04.21_EMT-1_Transition_2019_Scope.pdf"],["5/1/2020 Interim Policy on Courses & Exams","https://iremsc.org/wp-content/uploads/2020/11/SOAEMS_2020.05.01InterimPolicyonCoursesandExams.pdf"],["9/17/2020 Updated Interim Policy (Courses/Exams/Provisional Certs)","https://iremsc.org/wp-content/uploads/2021/03/SOA-EMS2020.09.17_Courses_Exams_and_Provisional_Certifications_Update_Alaska_EMS.pdf"],["2014 Alaska EMS Reassessment (NHTSA-TAT)","https://iremsc.org/wp-content/uploads/2021/05/2014-Alaska-EMS-Reassessment-Final-Report-2014.pdf"],["National EMS Agenda 2050","https://iremsc.org/wp-content/uploads/2021/05/EMS-Agenda-2050.pdf"],["National EMS Education Agenda 2010","https://iremsc.org/wp-content/uploads/2021/05/EMS_Education_Agenda_2010.pdf"]]},
 
-{id:"ems-regulations", title:"EMS Regulations", url:"https://iremsc.org/state-resources-2/ems-regulations/", suggested:"Resources",
+{id:"ems-regulations", title:"EMS Regulations", url:"https://iremsc.org/state-resources-2/ems-regulations/", suggested:"Grants | Resources",
  description:"Links to the official 7 AAC 26 EMS regulations and referenced scope-of-practice/instructor-certification documents, plus a 2021 section on the transition from Alaska's 'Comfort One' end-of-life program to POLST, with patient/provider brochures (some hosted on a different region's site, sremsc.org).",
  ext:[["AK Legislature - EMS Regulation","http://www.akleg.gov/basis/aac.asp#7.26"],["2002 National Guidelines for Instructor Education (NHTSA site)","https://one.nhtsa.gov/people/injury/ems/instructor/instructor_ems/2002_national_guidelines.htm"],["Comfort One info for patients/providers","http://dhss.alaska.gov/dph/Emergency/Pages/ems/programs/comfort_one.aspx"],["Comfort One FAQ (hosted on sremsc.org)","https://www.sremsc.org/wp-content/uploads/2019/10/Comfort_One_FAQ.pdf"],["Comfort One Family Brochure (sremsc.org)","https://www.sremsc.org/wp-content/uploads/2019/10/ComfortOneFAMILY-8-14.pdf"],["Comfort One Provider Brochure (sremsc.org)","https://www.sremsc.org/wp-content/uploads/2019/10/ComfortOnePROVIDERS-8-14.pdf"]],
  files:[["7 AAC 26 EMS Regulations","https://iremsc.org/wp-content/uploads/2023/01/EMS-Regulations.pdf"],["2019 Alaska Scope of Practice","https://iremsc.org/wp-content/uploads/2021/02/2019-SOA-Scope-of-Practice.pdf"],["Guide for EMS Instructors & Certifying Officers (Appx A)","https://iremsc.org/wp-content/uploads/2021/02/2017200794-ABR-SOA-Guide-for-Emergency-Medical-Services-Certification-Licensure.pdf"],["2002 National Guidelines for Instructor Education (PDF)","https://iremsc.org/wp-content/uploads/2020/11/DPH.EMS_.Adop_.Ref_.2002NationalGuidelinesInstructorEdu.2017200794.03.21.18.pdf"],["National EMS Education Standards","https://iremsc.org/wp-content/uploads/2020/11/DPH.EMS_.Adop_.Ref_.Amendments.NationalEMSEdu.Standards.2017200794.03.21.2018.pdf"],["FAQ: Transitioning to 2019 Regulations","https://iremsc.org/wp-content/uploads/2021/03/AlaskaEMS_Regulations_Update_FAQ_2020.10-Revised.pdf"],["POLST Program","https://iremsc.org/wp-content/uploads/2021/04/2019200825-ABR-DHSS-Physician_Orders_for_Life_Sustaining_Treatment_Program.pdf"],["POLST Form","https://iremsc.org/wp-content/uploads/2021/04/2019200825-ABR-Alaska_POLST_Form.pdf"]]},
@@ -528,7 +528,7 @@ const PAGES = [
  ext:[["State ACEMS site","http://dhss.alaska.gov/dph/Emergency/Pages/acems/default.aspx"],["ACEMS Task Force Application (SurveyMonkey)","https://www.surveymonkey.com/r/ITFapp2020"],["ACEMS Award Nomination (SurveyMonkey, dated 2021 link text)","https://www.surveymonkey.com/r/EMSawards2021"]],
  files:[]},
 
-{id:"jobs", title:"Jobs", url:"https://iremsc.org/jobs/", suggested:"Resources",
+{id:"jobs", title:"Jobs", url:"https://iremsc.org/jobs/", suggested:"Grants | Resources",
  description:"Outbound job-board links for regional employers (Foundation Health Partners, LifeMed Alaska, Denali Universal Services, Fairbanks North Star Borough, City of Fairbanks, Guardian Flight). No IREMSC job listings of its own; an empty 'Time Sensitive Job Opportunities' header with nothing under it.",
  ext:[["Foundation Health Partners careers","https://www.foundationhealth.org/fhp_careers"],["LifeMed Alaska jobs","https://recruiting.paylocity.com/Recruiting/Jobs/All/a9b97593-e9d7-43b9-8841-2a8e004f5979/LifeMed-Alaska"],["Denali Universal Services jobs","https://recruiting2.ultipro.com/DEN1005DENUS/JobBoard/86b2be56-ceea-4de4-931b-b6b6cdae1b75/"],["Fairbanks North Star Borough jobs","https://www.fnsb.gov/969/We-Are-Hiring"],["City of Fairbanks jobs","https://www.governmentjobs.com/careers/fairbanks"],["Guardian Flight jobs","https://careers.gmr.net/guardianflight/jobs"]],
  files:[]},
