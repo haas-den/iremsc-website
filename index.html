@@ -814,7 +814,21 @@ function flashSaved(id){
 }
 
 // Light polling so teammates editing at the same time stay roughly in sync.
+// While anyone is actively typing anywhere on the page, we still fetch fresh
+// data in the background, but we skip the re-render - a full re-render would
+// rebuild every text field from its last SAVED value, wiping out whatever
+// was typed in the last few seconds but hadn't been auto-saved yet. The next
+// poll (or the moment they click/tab away) will catch the view back up.
+function isCurrentlyTyping(){
+  const el = document.activeElement;
+  if(!el) return false;
+  if(el.tagName === "TEXTAREA") return true;
+  if(el.tagName === "INPUT" && ["text","email","url","search"].includes(el.type)) return true;
+  return false;
+}
+
 setInterval(async ()=>{
+  const typing = isCurrentlyTyping();
   try{
     const res = await fetch("/api/decisions");
     if(res.ok){
@@ -824,7 +838,7 @@ setInterval(async ()=>{
       Object.keys(fresh).forEach(id=>{
         if(id !== activeId) state[id] = fresh[id];
       });
-      render();
+      if(!typing) render();
     }
   }catch(e){ /* ignore transient errors */ }
   try{
@@ -833,8 +847,10 @@ setInterval(async ()=>{
       const fresh2 = await res2.json();
       if(JSON.stringify(fresh2) !== JSON.stringify(contributors)){
         contributors = fresh2;
-        renderContributors();
-        render();
+        if(!typing){
+          renderContributors();
+          render();
+        }
       }
     }
   }catch(e){ /* ignore transient errors */ }
