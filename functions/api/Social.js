@@ -8,10 +8,11 @@
 // board rather than being emailed privately.
 //
 // Data model: one KV key, "social:links" -> JSON object of
-//   { youtube, instagram, facebook, linkedin, x, updatedAt }
+//   { youtube, instagram, facebook, linkedin, x, customLabel, customUrl, updatedAt }
 
 const KEY = "social:links";
-const FIELDS = ["youtube", "instagram", "facebook", "linkedin", "x"];
+const FIELDS = ["youtube", "instagram", "facebook", "linkedin", "x", "customLabel", "customUrl"];
+const URL_FIELDS = new Set(["youtube", "instagram", "facebook", "linkedin", "x", "customUrl"]);
 
 export async function onRequestGet(context) {
   const { env } = context;
@@ -48,7 +49,8 @@ export async function onRequestPost(context) {
   FIELDS.forEach((f) => {
     let val = String((body && body[f]) || "").trim().slice(0, 300);
     // be forgiving - if someone pastes a bare URL without a scheme, add one
-    if (val && !/^https?:\/\//i.test(val)) {
+    // (but never do this to the plain-text custom platform label)
+    if (val && URL_FIELDS.has(f) && !/^https?:\/\//i.test(val)) {
       val = "https://" + val;
     }
     record[f] = val;
