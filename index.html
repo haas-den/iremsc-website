@@ -27,6 +27,15 @@
   }
   .wrap{max-width:1180px;margin:0 auto;padding:28px 24px 80px;}
 
+  /* ---- contact bar ---- */
+  .contact-bar{
+    display:flex; justify-content:flex-end; align-items:center; gap:14px; flex-wrap:wrap;
+    font-size:11.5px; color:var(--slate); padding:0 2px 10px;
+  }
+  .contact-bar a{color:var(--teal-deep); text-decoration:none; font-weight:600;}
+  .contact-bar a:hover{text-decoration:underline;}
+  .contact-bar .sep{color:var(--line);}
+
   /* ---- header / masthead ---- */
   .masthead{
     background:#09244a;
@@ -166,6 +175,9 @@
 
   .social-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
   .social-row label{width:80px; font-size:12px; font-weight:700; color:var(--teal-deep); flex-shrink:0;}
+  .social-row input.social-custom-label{
+    width:110px; flex:none; font-weight:700; color:var(--teal-deep);
+  }
   .social-row input{
     flex:1; padding:8px 10px; border:1px solid var(--line); border-radius:4px; font-size:12.5px;
   }
@@ -289,15 +301,26 @@
   }
   .dest-caption{font-size:9px; color:var(--slate); text-align:right; line-height:1.3;}
 
-  .notes-block{margin-top:14px; width:100%;}
+  .comments-block{margin-top:14px; width:100%;}
   .notes-label{
     display:block; font-size:11px; text-transform:uppercase; letter-spacing:.06em;
     color:var(--slate); margin-bottom:5px;
   }
-  textarea.notes{
-    width:100%; min-height:64px; padding:9px 11px; border:1px solid var(--line);
+  .comment-list{margin:6px 0 10px; display:flex; flex-direction:column; gap:8px;}
+  .comment-row{background:#F7F9F8; border:1px solid var(--line); border-radius:4px; padding:8px 10px;}
+  .comment-row.legacy{background:#FBF6EC; border-color:#EADFC4;}
+  .comment-meta{display:flex; justify-content:space-between; gap:10px; font-size:11px; color:var(--teal-deep); font-weight:700; margin-bottom:4px;}
+  .comment-position{color:var(--slate); font-weight:400;}
+  .comment-time{color:var(--slate); font-weight:400; flex-shrink:0; white-space:nowrap;}
+  .comment-text{font-size:12.5px; line-height:1.5; color:#33433D; white-space:pre-wrap;}
+  .comment-empty{font-size:12px; color:var(--slate); font-style:italic; padding:4px 0;}
+  .comment-form{display:flex; flex-direction:column; gap:8px;}
+  .comment-form select.commenterPick{padding:7px 9px; border:1px solid var(--line); border-radius:4px; font-size:12.5px; background:#fff;}
+  .comment-form textarea.newComment{
+    width:100%; min-height:56px; padding:9px 11px; border:1px solid var(--line);
     border-radius:4px; font-size:12.5px; font-family:inherit; resize:vertical;
   }
+  .comment-form .btn{align-self:flex-start; padding:8px 16px; font-size:12.5px;}
   .saved-tick{font-size:11px; color:var(--keep); opacity:0; transition:opacity .3s; display:block; margin-top:6px;}
   .saved-tick.show{opacity:1;}
 
@@ -310,6 +333,12 @@
 </head>
 <body>
 <div class="wrap">
+
+  <div class="contact-bar">
+    <span>Questions? Email <a href="mailto:kaila@buildingbridge.com">kaila@buildingbridge.com</a></span>
+    <span class="sep">|</span>
+    <span>Technical/platform issues: <a href="mailto:support@buildingbridge.com">support@buildingbridge.com</a></span>
+  </div>
 
   <div class="masthead">
     <p class="eyebrow">IREMSC.ORG - SITE REBUILD / CONTENT INVENTORY</p>
@@ -335,6 +364,7 @@
     <summary>Logins &amp; access needed for integration</summary>
     <div class="login-body">
       <p class="hint">Step 1: mark each service Cut or Keep below - that decision is shared with your team, just like the rest of this board. Step 2: check the box next to any service you want included in the checklist that gets emailed to you (that email step is private and never saved here).</p>
+      <div id="loginComments"></div>
       <div class="login-grid" id="loginGrid"></div>
       <textarea id="loginCustom" rows="2" placeholder="Add any other services, one per line..."></textarea>
       <div class="login-send-row">
@@ -349,11 +379,13 @@
     <summary>Social media accounts</summary>
     <div class="login-body">
       <p class="hint">Confirm or update the official links for the new site's footer. Saved to the shared board - visible to your whole team, not emailed anywhere.</p>
+      <div id="socialComments"></div>
       <div class="social-row"><label>YouTube</label><input type="url" id="socialYoutube" placeholder="https://www.youtube.com/channel/yourhandle"></div>
       <div class="social-row"><label>Instagram</label><input type="url" id="socialInstagram" placeholder="https://instagram.com/yourhandle"></div>
       <div class="social-row"><label>Facebook</label><input type="url" id="socialFacebook" placeholder="https://www.facebook.com/yourhandle/"></div>
       <div class="social-row"><label>LinkedIn</label><input type="url" id="socialLinkedin" placeholder="https://www.linkedin.com/in/yourhandle/"></div>
       <div class="social-row"><label>X</label><input type="url" id="socialX" placeholder="https://x.com/yourhandle"></div>
+      <div class="social-row"><input type="text" id="socialCustomLabel" class="social-custom-label" placeholder="Other platform"><input type="url" id="socialCustomUrl" placeholder="https://..."></div>
       <span class="social-save-note" id="socialStatus">saved</span>
     </div>
   </details>
@@ -587,6 +619,18 @@ function renderLoginGrid(){
   }).join("");
 }
 
+function renderLoginComments(){
+  const el = document.getElementById("loginComments");
+  if(!el) return;
+  el.innerHTML = renderComments("_login_checklist", getRec("_login_checklist"));
+}
+
+function renderSocialComments(){
+  const el = document.getElementById("socialComments");
+  if(!el) return;
+  el.innerHTML = renderComments("_social_media", getRec("_social_media"));
+}
+
 function setLoginStatus(msg, ok){
   const el = document.getElementById("loginStatus");
   el.textContent = msg;
@@ -704,19 +748,57 @@ function wireContributorForm(){
   });
 }
 
-function decisionMakerOptionsHtml(rec){
+function contributorOptionsHtml(selectedEmail){
   return contributors.map((c,i)=>{
-    const selected = rec.decisionMaker && rec.decisionMaker.email === c.email ? "selected" : "";
+    const selected = selectedEmail && selectedEmail === c.email ? "selected" : "";
     const label = c.position ? `${c.name} - ${c.position} (${c.email})` : `${c.name} (${c.email})`;
     return `<option value="${i}" ${selected}>${escapeHtml(label)}</option>`;
   }).join("");
+}
+
+function decisionMakerOptionsHtml(rec){
+  return contributorOptionsHtml(rec.decisionMaker && rec.decisionMaker.email);
+}
+
+function formatWhen(ms){
+  if(!ms) return "";
+  const d = new Date(ms);
+  const datePart = d.toLocaleDateString(undefined, {month:"short", day:"numeric", year:"numeric"});
+  const timePart = d.toLocaleTimeString(undefined, {hour:"numeric", minute:"2-digit"});
+  return datePart + " " + timePart;
+}
+
+function renderComments(pageId, rec){
+  const legacy = (rec.notes && rec.notes.trim())
+    ? '<div class="comment-row legacy"><div class="comment-meta"><span>Note (from before comments were added)</span></div><div class="comment-text">'+escapeHtml(rec.notes)+'</div></div>'
+    : "";
+  const list = (rec.comments || []).map(c=>{
+    const who = c.position
+      ? escapeHtml(c.name) + ' <span class="comment-position">(' + escapeHtml(c.position) + ')</span>'
+      : escapeHtml(c.name);
+    return '<div class="comment-row"><div class="comment-meta"><span>'+who+'</span><span class="comment-time">'+formatWhen(c.submittedAt)+'</span></div><div class="comment-text">'+escapeHtml(c.text)+'</div></div>';
+  }).join("");
+  const empty = (!legacy && !list) ? '<div class="comment-empty">No comments yet.</div>' : "";
+  return `
+    <div class="comments-block">
+      <span class="notes-label">Comments</span>
+      <div class="comment-list">${legacy}${list}${empty}</div>
+      <div class="comment-form">
+        <select class="commenterPick" data-id="${pageId}">
+          <option value="">Choose your name...</option>
+          ${contributorOptionsHtml(null)}
+        </select>
+        <textarea class="newComment" data-id="${pageId}" rows="2" placeholder="Add a comment..."></textarea>
+        <button class="btn submitComment" data-id="${pageId}">Submit</button>
+      </div>
+    </div>`;
 }
 
 // ---------- runtime ----------
 // Backend: Cloudflare Pages Functions at /api/decisions, /api/contributors and
 // /api/upload, backed by a KV namespace (decisions + contributors) and an R2
 // bucket (uploaded files). See /functions.
-let state = {}; // id -> {status, parent, notes, decisionMaker, items, uploads}
+let state = {}; // id -> {status, parent, notes, decisionMaker, items, uploads, comments}
 let saveQueue = Promise.resolve(); // serialize writes so rapid edits don't race
 let openDetails = new Set(); // tracks which <details> blocks are open across re-renders
 
@@ -738,10 +820,11 @@ function buildParentOptions(select){
 }
 
 function getRec(id){
-  if(!state[id]) state[id] = {status:"undecided", parent:"", notes:"", decisionMaker:null, items:{}, uploads:{}, meta:{}};
+  if(!state[id]) state[id] = {status:"undecided", parent:"", notes:"", decisionMaker:null, items:{}, uploads:{}, meta:{}, comments:[]};
   if(!state[id].items) state[id].items = {};
   if(!state[id].uploads) state[id].uploads = {};
   if(!state[id].meta) state[id].meta = {};
+  if(!state[id].comments) state[id].comments = [];
   if(state[id].decisionMaker === undefined) state[id].decisionMaker = null;
   return state[id];
 }
@@ -773,7 +856,8 @@ async function saveOne(id){
           decisionMaker: rec.decisionMaker,
           items: rec.items,
           uploads: rec.uploads,
-          meta: rec.meta
+          meta: rec.meta,
+          comments: rec.comments
         })
       });
       if(!res.ok) throw new Error("save failed: "+res.status);
@@ -1020,10 +1104,7 @@ function cardHtml(p){
               <span class="dest-caption">Optional, your web designer will sort pages based on SEO logic</span>
             </div>
           </div>
-          <div class="notes-block">
-            <span class="notes-label">Notes</span>
-            <textarea class="notes" rows="3" data-id="${p.id}">${escapeHtml(rec.notes||'')}</textarea>
-          </div>
+          ${renderComments(p.id, rec)}
           <span class="saved-tick" id="tick-${p.id}">saved</span>
         </div>
       </div>
@@ -1034,6 +1115,8 @@ function cardHtml(p){
 function render(){
   renderSummary();
   renderLoginGrid();
+  renderLoginComments();
+  renderSocialComments();
   const groups = {};
   PARENTS.forEach(p=>groups[p]=[]);
   const visible = PAGES.filter(matchesFilters);
@@ -1103,17 +1186,36 @@ function attachCardEvents(){
     });
   });
 
-  document.querySelectorAll("textarea.notes").forEach(area=>{
-    let t;
-    area.addEventListener("input", ()=>{
-      clearTimeout(t);
-      t = setTimeout(async ()=>{
-        const id = area.dataset.id;
-        const rec = getRec(id);
-        rec.notes = area.value;
-        await saveOne(id);
-        flashSaved(id);
-      }, 500);
+  document.querySelectorAll(".submitComment").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const id = btn.dataset.id;
+      const block = btn.closest(".comments-block");
+      const select = block.querySelector(".commenterPick");
+      const textarea = block.querySelector(".newComment");
+      const idx = select.value;
+      const text = textarea.value.trim();
+      if(idx === ""){
+        alert("Choose your name from the list first.");
+        return;
+      }
+      if(!text){
+        alert("Write a comment before submitting.");
+        return;
+      }
+      const person = contributors[parseInt(idx, 10)];
+      if(!person) return;
+      const rec = getRec(id);
+      if(!rec.comments) rec.comments = [];
+      rec.comments.push({
+        name: person.name,
+        position: person.position || "",
+        email: person.email,
+        text,
+        submittedAt: Date.now()
+      });
+      await saveOne(id);
+      render();
+      flashSaved(id);
     });
   });
 
@@ -1215,6 +1317,7 @@ document.getElementById("exportBtn").addEventListener("click", ()=>{
       destination: rec.parent || p.suggested,
       decisionMaker: rec.decisionMaker || null,
       notes: rec.notes||"",
+      comments: rec.comments||[],
       itemDecisions: rec.items||{},
       uploads: rec.uploads||{}
     };
@@ -1237,7 +1340,7 @@ document.getElementById("resetBtn").addEventListener("click", ()=>{
 });
 
 // ---------- social media accounts ----------
-const SOCIAL_FIELDS = ["youtube","instagram","facebook","linkedin","x"];
+const SOCIAL_FIELDS = ["youtube","instagram","facebook","linkedin","x","customLabel","customUrl"];
 let socialSaveTimer = null;
 
 async function loadSocial(){
